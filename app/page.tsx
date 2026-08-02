@@ -2,7 +2,16 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { categoryLabels, projects, type Category, type Lang, type Project } from "./projects";
+import {
+  categoryLabels,
+  defaultManagedProjects,
+  defaultSiteSettings,
+  type Category,
+  type Lang,
+  type ManagedProject,
+  type PortfolioContent,
+  type Project,
+} from "./projects";
 
 const copy = {
   zh: {
@@ -106,15 +115,6 @@ const workflow = [
   ["05", "工艺建议", "PRODUCTION PROPOSAL"],
 ] as const;
 
-const software = [
-  { code: "Ps", name: "Adobe Photoshop", zh: "图像合成、印花效果、模特上身与色彩分离", en: "IMAGE COMPOSITING / MOCKUPS / COLOR SEPARATION", level: "PRIMARY" },
-  { code: "Ai", name: "Adobe Illustrator", zh: "矢量图形、技术三视图、连续纹样与生产文件", en: "VECTOR / TECH FLATS / REPEAT / PRODUCTION FILES", level: "PRIMARY" },
-  { code: "Pro", name: "Procreate", zh: "手绘插画、笔刷实验、角色与草图", en: "DRAWING / BRUSH STUDIES / CHARACTERS", level: "DAILY" },
-  { code: "Id", name: "Adobe InDesign", zh: "作品集、提案书、系列说明与版式系统", en: "PORTFOLIO / DECK / EDITORIAL SYSTEM", level: "LAYOUT" },
-  { code: "C4D", name: "3D / Mockup Thinking", zh: "基础空间预览、材质判断与陈列沟通", en: "SPATIAL PREVIEW / MATERIAL / PRESENTATION", level: "WORKFLOW" },
-  { code: "Pr", name: "Motion Support", zh: "短视频剪辑、动态提案与社交内容输出", en: "SHORT EDITS / MOTION PITCH / SOCIAL OUTPUT", level: "SUPPORT" },
-];
-
 const categories: ("all" | Category)[] = ["all", "placement", "allover", "graphic", "illustration", "identity"];
 
 export default function Home() {
@@ -122,13 +122,35 @@ export default function Home() {
   const [category, setCategory] = useState<"all" | Category>("all");
   const [visible, setVisible] = useState(12);
   const [active, setActive] = useState<Project | null>(null);
+  const [settings, setSettings] = useState(defaultSiteSettings);
+  const [portfolioProjects, setPortfolioProjects] = useState<ManagedProject[]>(defaultManagedProjects);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const t = copy[lang];
 
-  const filtered = useMemo(() => category === "all" ? projects : projects.filter(project => project.category === category), [category]);
+  const filtered = useMemo(() => category === "all" ? portfolioProjects : portfolioProjects.filter(project => project.category === category), [category, portfolioProjects]);
   const shown = filtered.slice(0, visible);
+  const heroProjects = useMemo(() => {
+    const selected = settings.heroSlugs
+      .map(slug => portfolioProjects.find(project => project.slug === slug))
+      .filter((project): project is ManagedProject => Boolean(project));
+    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 3);
+  }, [portfolioProjects, settings.heroSlugs]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/content", { cache: "no-store" })
+      .then(response => response.ok ? response.json() : Promise.reject(new Error("content unavailable")))
+      .then((content: PortfolioContent) => {
+        if (!cancelled) {
+          setSettings(content.settings);
+          setPortfolioProjects(content.projects);
+        }
+      })
+      .catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("portfolio-lang") as Lang | null;
@@ -169,12 +191,12 @@ export default function Home() {
   useEffect(() => {
     const syncCase = () => {
       const slug = new URLSearchParams(window.location.search).get("case");
-      setActive(slug ? projects.find(project => project.slug === slug) ?? null : null);
+      setActive(slug ? portfolioProjects.find(project => project.slug === slug) ?? null : null);
     };
-    syncCase();
+    const frame = window.requestAnimationFrame(syncCase);
     window.addEventListener("popstate", syncCase);
-    return () => window.removeEventListener("popstate", syncCase);
-  }, []);
+    return () => { window.cancelAnimationFrame(frame); window.removeEventListener("popstate", syncCase); };
+  }, [portfolioProjects]);
 
   useEffect(() => {
     if (!active) {
@@ -208,9 +230,12 @@ export default function Home() {
 
   const switchCategory = (next: "all" | Category) => { setCategory(next); setVisible(12); };
 
-  return <main>
+  return <main
+    className={settings.handwrittenSoftware ? "handwritten-on" : ""}
+    style={{ "--acid": settings.accentColor, "--hero-weight": settings.heroWeight } as React.CSSProperties}
+  >
     <header className="site-header">
-      <a className="wordmark" href="#top"><b>YOUR NAME.</b><span>FASHION PRINT DESIGNER</span></a>
+      <a className="wordmark" href="#top"><b>{settings.displayName}.</b><span>FASHION PRINT DESIGNER</span></a>
       <nav aria-label="Primary navigation">
         {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id}>{t.nav[index]}</a>)}
       </nav>
@@ -226,14 +251,14 @@ export default function Home() {
       <div className="hero-copy">
         <p className="eyebrow"><i />{t.eyebrow}</p>
         <h1 aria-label={`${t.heroA} ${t.heroB} ${t.heroC}`}><span>{t.heroA}</span><span className="outline">{t.heroB}</span><span>{t.heroC}</span></h1>
-        <div className="hero-bottom"><p>{t.heroText}</p><a href="#cases" className="arrow-link">{t.enter}<b>↘</b></a></div>
+        <div className="hero-bottom"><p>{settings.heroIntro[lang]}</p><a href="#cases" className="arrow-link">{t.enter}<b>↘</b></a></div>
       </div>
       <div className="hero-visual" aria-label="Selected concept fashion cases">
-        {[projects[0], projects[2], projects[7]].map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
+        {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
           <Image src={project.assets.cover} alt={`${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} unoptimized />
           <span>{project.id} / {project.title}</span>
         </button>)}
-        <div className="hero-orbit"><span>24</span><small>CONCEPT<br />STUDIES</small></div>
+        <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
       </div>
       <div className="hero-foot"><span>{t.concept}</span><span>{t.scroll} ↓</span></div>
     </section>
@@ -242,19 +267,19 @@ export default function Home() {
 
     <section className="about" id="about">
       <div className="section-tag" data-reveal><span>01</span>POINT OF VIEW</div>
-      <div className="manifesto" data-reveal><p>{t.profile}</p><i>↳</i></div>
-      <div className="about-detail" data-reveal><div className="about-label">YOUR NAME<br />PATTERN DESIGNER<br />SHANGHAI, CHINA</div><p>{t.profileBody}</p></div>
+      <div className="manifesto" data-reveal><p>{settings.manifesto[lang]}</p><i>↳</i></div>
+      <div className="about-detail" data-reveal><div className="about-label">{settings.displayName}<br />PATTERN DESIGNER<br />{settings.city}</div><p>{settings.about[lang]}</p></div>
     </section>
 
     <section className="skills" id="skills">
-      <div className="skills-head" data-reveal><div className="section-tag"><span>02</span>CAPABILITY SYSTEM</div><h2>{t.softwareTitle}</h2><p>{t.softwareNote}</p></div>
+      <div className="skills-head" data-reveal><div className="section-tag"><span>02</span>CAPABILITY SYSTEM</div><h2>{t.softwareTitle}</h2><p>{t.softwareNote}</p><em className="hand-note">tools become visual language ↗</em></div>
       <div className="services-grid">
         <div className="service-column" data-reveal><h3>{t.serviceTitle}</h3>{services.map((service, index) => <div className="service-row" key={service[1]}><b>0{index + 1}</b><span>{lang === "zh" ? service[0] : service[1]}</span><i /></div>)}</div>
         <div className="process-column" data-reveal><h3>{t.processTitle}</h3>{workflow.map(item => <div className="process-row" key={item[0]}><b>{item[0]}</b><span>{lang === "zh" ? item[1] : item[2]}</span><em>→</em></div>)}</div>
       </div>
       <div className="software-grid">
-        {software.map((tool, index) => <article className="software-card" data-reveal key={tool.name} style={{ "--delay": `${index * 55}ms` } as React.CSSProperties}>
-          <div className="tool-code">{tool.code}</div><div><span>{tool.level}</span><h3>{tool.name}</h3><p>{lang === "zh" ? tool.zh : tool.en}</p></div><i>↗</i>
+        {settings.software.filter(tool => tool.enabled).map((tool, index) => <article className="software-card" data-reveal key={tool.id} style={{ "--delay": `${index * 55}ms` } as React.CSSProperties}>
+          <div className="tool-code">{tool.code}</div><div><span>CORE TOOL 0{index + 1}</span><h3>{tool.name}</h3><p>{tool.description[lang]}</p></div><i>↗</i>
         </article>)}
       </div>
     </section>
@@ -278,8 +303,8 @@ export default function Home() {
 
     <section className="contact" id="contact">
       <p>{t.contactKicker}</p><h2>{t.contactTitle.split("\n").map(line => <span key={line}>{line}</span>)}</h2>
-      <div className="contact-row"><p>{t.contactBody}</p><a href="mailto:hello@yourname.design">{t.mail}<i>↗</i></a></div>
-      <footer><span>© 2026 YOUR NAME</span><span>CONCEPT PORTFOLIO / SHANGHAI</span><a href="#top">BACK TO TOP ↑</a></footer>
+      <div className="contact-row"><p>{t.contactBody}</p><a href={`mailto:${settings.email}`}>{t.mail}<i>↗</i></a></div>
+      <footer><span>© 2026 {settings.displayName}</span><span>CONCEPT PORTFOLIO / {settings.city}</span><a href="/admin">CONTENT ADMIN ↗</a><a href="#top">BACK TO TOP ↑</a></footer>
     </section>
 
     {active && <div className="drawer-layer" role="presentation">

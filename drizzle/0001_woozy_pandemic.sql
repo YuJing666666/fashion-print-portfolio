@@ -1,0 +1,1 @@
+CREATE INDEX `idx_portfolio_projects_display_order` ON `portfolio_projects` (`display_order`);

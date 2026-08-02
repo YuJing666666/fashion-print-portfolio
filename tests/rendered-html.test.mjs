@@ -42,3 +42,24 @@ test("ships 24 concept boards and the required interaction contracts", async () 
   assert.match(css, /width:min\(82vw,1480px\)/);
   await access(new URL("../public/og.png", import.meta.url));
 });
+
+test("ships the persistent content console and mixed typography system", async () => {
+  const [page, admin, adminCss, contentStore, schema, hosting] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/admin/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/admin/admin.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/content-store.ts", import.meta.url), "utf8"),
+    readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
+    readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"),
+  ]);
+  assert.match(page, /fetch\("\/api\/content"/);
+  assert.match(page, /CONTENT ADMIN/);
+  assert.match(admin, /Adobe Illustrator|软件能力/);
+  assert.match(admin, /\/api\/admin\/content/);
+  assert.match(adminCss, /var\(--font-hand\)/);
+  assert.match(contentStore, /portfolio_admins/);
+  assert.match(schema, /idx_portfolio_projects_display_order/);
+  assert.equal(JSON.parse(hosting).d1, "DB");
+  await access(new URL("../drizzle/0000_redundant_puppet_master.sql", import.meta.url));
+  await access(new URL("../drizzle/0001_woozy_pandemic.sql", import.meta.url));
+});

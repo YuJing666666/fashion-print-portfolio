@@ -21,6 +21,39 @@ export type Project = {
   story: { meaning: Localized; concept: Localized };
 };
 
+export type SoftwareItem = {
+  id: string;
+  code: string;
+  name: string;
+  description: Localized;
+  enabled: boolean;
+};
+
+export type SiteSettings = {
+  displayName: string;
+  city: string;
+  email: string;
+  heroIntro: Localized;
+  manifesto: Localized;
+  about: Localized;
+  accentColor: string;
+  heroWeight: "800" | "900";
+  handwrittenSoftware: boolean;
+  heroSlugs: string[];
+  software: SoftwareItem[];
+};
+
+export type ManagedProject = Project & {
+  visible: boolean;
+  order: number;
+  hero: boolean;
+};
+
+export type PortfolioContent = {
+  settings: SiteSettings;
+  projects: ManagedProject[];
+};
+
 const zhEn = (zh: string, en: string): Localized => ({ zh, en });
 const color = (zh: string, en: string, hex: string) => ({ name: zhEn(zh, en), hex });
 
@@ -75,3 +108,38 @@ export const projects: Project[] = raw.map((item, index) => {
 export const categoryLabels: Record<"all" | Category, Localized> = {
   all: zhEn("全部", "ALL"), placement: zhEn("定位印花", "PLACEMENT"), allover: zhEn("满版纹样", "ALL-OVER"), graphic: zhEn("T恤图形", "GRAPHIC TEE"), illustration: zhEn("插画", "ILLUSTRATION"), identity: zhEn("视觉系统", "VISUAL IDENTITY"),
 };
+
+export const defaultSiteSettings: SiteSettings = {
+  displayName: "YOUR NAME",
+  city: "SHANGHAI, CHINA",
+  email: "hello@yourname.design",
+  heroIntro: zhEn(
+    "我把观察、情绪与图形实验，转化为可以真正进入服装结构的视觉语言。",
+    "I translate observation, emotion and graphic experiments into visual systems designed for real garments.",
+  ),
+  manifesto: zhEn(
+    "图案不是贴在衣服上的装饰，而是穿着者与外界交换信号的方式。",
+    "A print is not decoration placed on clothing. It is a signal exchanged between the wearer and the world.",
+  ),
+  about: zhEn(
+    "以服装图案为核心，我同时处理平面系统、插画、配色与印花落地。工作从研究与草图开始，经过上身比例测试和工艺建议，形成完整、可沟通的视觉方案。",
+    "Fashion print is my core practice, supported by graphic systems, illustration, color and production thinking—from research and sketching to on-body scale tests and a proposed technique.",
+  ),
+  accentColor: "#c8ff19",
+  heroWeight: "900",
+  handwrittenSoftware: true,
+  heroSlugs: ["static-garden", "signal-burn", "electric-folk"],
+  software: [
+    { id: "illustrator", code: "Ai", name: "Adobe Illustrator", description: zhEn("矢量图形、技术三视图与连续纹样", "VECTOR GRAPHICS, TECH FLATS & REPEATS"), enabled: true },
+    { id: "photoshop", code: "Ps", name: "Adobe Photoshop", description: zhEn("图像合成、上身效果与色彩分离", "COMPOSITING, MOCKUPS & COLOR SEPARATION"), enabled: true },
+    { id: "clo3d", code: "CLO", name: "CLO 3D", description: zhEn("服装版型、面料垂感与三维试衣", "PATTERN, FABRIC DRAPE & 3D FITTING"), enabled: true },
+    { id: "style3d", code: "S3D", name: "Style3D", description: zhEn("数字样衣、材质预览与动态展示", "DIGITAL SAMPLES, MATERIALS & MOTION"), enabled: true },
+  ],
+};
+
+export const defaultManagedProjects: ManagedProject[] = projects.map((project, index) => ({
+  ...project,
+  visible: true,
+  order: index + 1,
+  hero: defaultSiteSettings.heroSlugs.includes(project.slug),
+}));
