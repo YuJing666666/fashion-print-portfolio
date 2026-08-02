@@ -5,15 +5,22 @@ import { useEffect, useState } from "react";
 
 type Lang = "zh" | "en";
 type Text = Record<Lang, string>;
-type Project = { id: string; title: string; type: Text; note: Text; image: string };
+type Project = { id: string; title: string; type: Text; note: Text; image: string; format: "portrait" | "wide" };
 
 const projects: Project[] = [
-  { id: "01", title: "NIGHT PARADE", type: { zh: "服装印花", en: "FASHION PRINT" }, note: { zh: "夜行生物、星芒与墨迹构成的黑白印花实验。", en: "A monochrome print study built from nocturnal figures, stars and raw ink." }, image: "/works/night-parade.png" },
-  { id: "02", title: "WEAR THE NOISE", type: { zh: "视觉系统", en: "VISUAL SYSTEM" }, note: { zh: "为街头服装构建的模块化图形语言。", en: "A modular graphic language developed for streetwear." }, image: "/works/wear-the-noise.png" },
-  { id: "03", title: "MUTANT BLOOM", type: { zh: "连续纹样", en: "REPEAT PATTERN" }, note: { zh: "花朵、眼睛与液态形状的重复结构。", en: "A repeating structure of flowers, eyes and liquid forms." }, image: "/works/mutant-bloom.png" },
-  { id: "04", title: "PLASTIC GARDEN", type: { zh: "图形实验", en: "GRAPHIC STUDY" }, note: { zh: "金属、塑料与花卉素材的拼贴研究。", en: "A collage study in chrome, plastic and botanical material." }, image: "/works/plastic-garden.png" },
-  { id: "05", title: "SOFT ERROR", type: { zh: "图案设计", en: "PATTERN DESIGN" }, note: { zh: "把数字故障转化为可穿着的图形节奏。", en: "Digital glitches translated into a wearable graphic rhythm." }, image: "/works/soft-error.png" },
-  { id: "06", title: "TINY PANIC", type: { zh: "插画", en: "ILLUSTRATION" }, note: { zh: "关于日常情绪的一组角色插画。", en: "A character study about everyday states of mind." }, image: "/works/tiny-panic.png" },
+  { id: "01", title: "CHAOS STREETWEAR", type: { zh: "成衣印花效果", en: "APPAREL PRINT" }, note: { zh: "黑色街头 T 恤的正面印花应用与视觉比例参考。", en: "Front-print placement and scale study on a black streetwear tee." }, image: "/cases/streetwear-male.png", format: "portrait" },
+  { id: "02", title: "REBEL TEE", type: { zh: "成衣图形应用", en: "GRAPHIC TEE" }, note: { zh: "白色宽松 T 恤上的高对比图形应用参考。", en: "High-contrast graphic application on an oversized white tee." }, image: "/cases/streetwear-female.png", format: "portrait" },
+  { id: "03", title: "CHAOS HOODIE", type: { zh: "卫衣印花效果", en: "HOODIE APPLICATION" }, note: { zh: "从图形元素到连帽卫衣成衣效果的应用展示。", en: "Application study from graphic elements to a finished hoodie visual." }, image: "/cases/hoodie-application.png", format: "wide" },
+  { id: "04", title: "PRINT COLLECTION", type: { zh: "系列图案方向", en: "PRINT DIRECTION" }, note: { zh: "围绕街头文化建立的系列图案与色彩方向参考。", en: "A street-culture print collection and color-direction reference." }, image: "/cases/print-collection.png", format: "wide" },
+  { id: "05", title: "VOID PORTFOLIO", type: { zh: "案例编排参考", en: "CASE STUDY LAYOUT" }, note: { zh: "深色服装印花案例的完整展示结构参考。", en: "Reference structure for presenting a dark fashion-print case study." }, image: "/cases/dark-portfolio-study.png", format: "wide" },
+  { id: "06", title: "PRINT LANGUAGE", type: { zh: "作品集视觉参考", en: "PORTFOLIO DIRECTION" }, note: { zh: "白色背景下的图案、能力与工具信息编排参考。", en: "Reference for combining prints, capabilities and tools on white." }, image: "/cases/light-portfolio-study.png", format: "wide" },
+];
+
+const software = [
+  { code: "Ps", name: "Adobe Photoshop", use: { zh: "图像处理 / 印花效果", en: "IMAGE / PRINT MOCKUP" }, tag: { zh: "主要工具", en: "PRIMARY" } },
+  { code: "Ai", name: "Adobe Illustrator", use: { zh: "矢量图形 / 连续纹样", en: "VECTOR / REPEAT" }, tag: { zh: "主要工具", en: "PRIMARY" } },
+  { code: "Pro", name: "Procreate", use: { zh: "手绘插画 / 草图", en: "DRAWING / SKETCH" }, tag: { zh: "常用", en: "DAILY" } },
+  { code: "Id", name: "Adobe InDesign", use: { zh: "版式设计 / 作品集", en: "LAYOUT / PORTFOLIO" }, tag: { zh: "排版", en: "LAYOUT" } },
 ];
 
 const content = {
@@ -25,11 +32,13 @@ const content = {
     view: "查看作品",
     selected: "精选作品",
     selectedNote: "概念项目 / 2026",
+    referenceNote: "当前图片为你提供的参考案例，待替换为个人项目",
     concept: "概念作品",
     about: "关于我",
     aboutText: "我是一名专注服装图案的视觉设计师，也从事平面与插画创作。我关注图形如何进入真实的穿着场景：从一张草图、一块纹样，到最终成为衣服上的视觉语言。",
     skills: "能力",
     tools: "工作方式",
+    software: "软件工具",
     services: ["服装图案设计", "连续纹样开发", "平面视觉设计", "插画与角色", "色彩与印花方向"],
     process: ["趋势与素材研究", "概念与草图", "图案系统", "印花应用"],
     contactTitle: "一起做些有态度的图案。",
@@ -45,11 +54,13 @@ const content = {
     view: "VIEW WORKS",
     selected: "SELECTED WORKS",
     selectedNote: "CONCEPT PROJECTS / 2026",
+    referenceNote: "REFERENCE IMAGERY PROVIDED BY YOU — REPLACE WITH PERSONAL WORK",
     concept: "CONCEPT WORK",
     about: "ABOUT ME",
     aboutText: "I am a visual designer focused on fashion prints, with a parallel practice in graphic design and illustration. I care about how an image enters a real wearing context—from sketch and repeat to a visual language on fabric.",
     skills: "SKILLS",
     tools: "PROCESS",
+    software: "SOFTWARE",
     services: ["FASHION PRINT DESIGN", "REPEAT DEVELOPMENT", "GRAPHIC DESIGN", "ILLUSTRATION", "COLOR & PRINT DIRECTION"],
     process: ["RESEARCH", "CONCEPT & SKETCH", "PATTERN SYSTEM", "APPLICATION"],
     contactTitle: "LET'S MAKE PRINTS WITH A POINT OF VIEW.",
@@ -95,7 +106,7 @@ export default function Home() {
         <div className="hero-index">PORTFOLIO — 01</div>
       </div>
       <div className="poster-stage" aria-label="Selected fashion print posters">
-        {projects.slice(0, 3).map((project, index) => <button key={project.id} className={`poster poster-${index + 1}`} onClick={() => setActive(project)} aria-label={project.title}>
+        {[projects[0], projects[4], projects[1]].map((project, index) => <button key={project.id} className={`poster poster-${index + 1}`} onClick={() => setActive(project)} aria-label={project.title}>
           <Image src={project.image} alt={`${project.title} ${project.type[lang]}`} fill sizes="(max-width: 760px) 45vw, 24vw" priority={index === 0} />
           <span>{project.title}</span>
         </button>)}
@@ -110,8 +121,9 @@ export default function Home() {
 
     <section className="work-section" id="works">
       <div className="section-title"><div><span>01</span><h2>{t.selected}</h2></div><p>{t.selectedNote}</p></div>
+      <p className="reference-note">* {t.referenceNote}</p>
       <div className="work-grid">
-        {projects.map(project => <article className="work-card" key={project.id}>
+        {projects.map(project => <article className={`work-card ${project.format}`} key={project.id}>
           <button onClick={() => setActive(project)}>
             <div className="work-image"><Image src={project.image} alt={`${project.title} — ${project.type[lang]}`} fill sizes="(max-width: 720px) 90vw, 33vw" /></div>
             <div className="work-meta"><span>{project.id}</span><div><h3>{project.title}</h3><p>{project.type[lang]}</p></div><i>↗</i></div>
@@ -125,6 +137,7 @@ export default function Home() {
       <div className="capability" id="skills">
         <div><h3>{t.skills}</h3>{t.services.map((item, i) => <p key={item}><span>{item}</span><i style={{ width: `${92 - i * 9}%` }} /></p>)}</div>
         <div><h3>{t.tools}</h3>{t.process.map((item, i) => <p className="process" key={item}><b>0{i + 1}</b><span>{item}</span></p>)}</div>
+        <div className="software-panel"><h3>{t.software}</h3><div className="software-grid">{software.map(tool => <div className="software-card" key={tool.code}><b>{tool.code}</b><div><strong>{tool.name}</strong><span>{tool.use[lang]}</span></div><i>{tool.tag[lang]}</i></div>)}</div></div>
       </div>
     </section>
 
