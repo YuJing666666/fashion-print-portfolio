@@ -133,6 +133,7 @@ function modelVisual(project: Project) {
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>("zh");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [category, setCategory] = useState<"all" | Category>("all");
   const [visible, setVisible] = useState(12);
   const [active, setActive] = useState<Project | null>(null);
@@ -169,6 +170,8 @@ export default function Home() {
   useEffect(() => {
     const saved = localStorage.getItem("portfolio-lang") as Lang | null;
     if (saved === "zh" || saved === "en") window.requestAnimationFrame(() => setLang(saved));
+    const currentTheme = document.documentElement.dataset.theme;
+    window.requestAnimationFrame(() => setTheme(currentTheme === "dark" ? "dark" : "light"));
   }, []);
 
   const closeProject = useCallback(() => {
@@ -243,6 +246,12 @@ export default function Home() {
   };
 
   const switchCategory = (next: "all" | Category) => { setCategory(next); setVisible(12); };
+  const switchTheme = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem("portfolio-theme", next);
+  };
 
   return <main
     className={settings.handwrittenSoftware ? "handwritten-on" : ""}
@@ -253,7 +262,10 @@ export default function Home() {
       <nav aria-label="Primary navigation">
         {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id}>{t.nav[index]}</a>)}
       </nav>
-      <button className="language" onClick={() => setLang(lang === "zh" ? "en" : "zh")} aria-label="Switch language">{lang === "zh" ? "EN" : "中文"}</button>
+      <div className="header-actions">
+        <button className="theme-toggle" onClick={switchTheme} aria-label={theme === "light" ? "开启黑夜模式" : "切换为白天模式"} aria-pressed={theme === "dark"}><i /><span>{theme === "light" ? "NIGHT" : "DAY"}</span></button>
+        <button className="language" onClick={() => setLang(lang === "zh" ? "en" : "zh")} aria-label="Switch language">{lang === "zh" ? "EN" : "中文"}</button>
+      </div>
     </header>
 
     <section className="hero" id="top" onPointerMove={event => {

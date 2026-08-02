@@ -77,3 +77,17 @@ test("ships female lookbook hover states and a three-column rounded archive", as
   assert.match(css, /border-radius:clamp\(16px,2vw,27px\)/);
   assert.match(css, /project-card:hover \.model-layer/);
 });
+
+test("ships a persistent system-aware night mode", async () => {
+  const [layout, page, css] = await Promise.all([
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.match(layout, /prefers-color-scheme: dark/);
+  assert.match(layout, /portfolio-theme/);
+  assert.match(page, /className="theme-toggle"/);
+  assert.match(page, /document\.documentElement\.dataset\.theme/);
+  assert.match(css, /html\[data-theme="dark"\]/);
+  assert.match(css, /color-scheme:dark/);
+});
