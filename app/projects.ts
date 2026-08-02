@@ -1,0 +1,77 @@
+export type Lang = "zh" | "en";
+export type Localized = Record<Lang, string>;
+export type Category = "placement" | "allover" | "graphic" | "illustration" | "identity";
+
+export type Project = {
+  id: string;
+  slug: string;
+  title: string;
+  year: string;
+  category: Category;
+  featured: boolean;
+  ratio: "portrait" | "landscape" | "square";
+  assets: { cover: string; process?: string };
+  production: {
+    garment: Localized;
+    placement: Localized;
+    techniques: Localized[];
+    size: string;
+    colors: { name: Localized; hex: string }[];
+  };
+  story: { meaning: Localized; concept: Localized };
+};
+
+const zhEn = (zh: string, en: string): Localized => ({ zh, en });
+const color = (zh: string, en: string, hex: string) => ({ name: zhEn(zh, en), hex });
+
+const raw = [
+  ["static-garden","STATIC GARDEN","placement","tee","前胸与后背 / Front & back","380 × 480 mm",["拔染丝网印刷","Discharge screen print"],[color("墨黑","Ink Black","#101010"),color("骨白","Bone","#EDE8DC")],"在静止的植物形态里寻找破裂与生长。","Botanical fragments are cut, enlarged and rebuilt into a quiet but forceful placement print."],
+  ["soft-riot","SOFT RIOT","illustration","tee","前胸满幅 / Full front","360 × 430 mm",["水性丝网印刷","Water-based screen print"],[color("纸白","Paper","#F4F2ED"),color("热粉","Hot Pink","#F13E91"),color("黑","Black","#111111")],"柔软并不等于安静。","A hand-drawn butterfly is disrupted with urgent brush marks to balance softness and resistance."],
+  ["signal-burn","SIGNAL BURN","graphic","hoodie","左胸与后背 / Chest & back","320 × 390 mm",["发泡印花","Raised puff print"],[color("炭灰","Charcoal","#292B2C"),color("酸性绿","Acid Lime","#C7FF18")],"燃烧是一种重新发出信号的方式。","A compact globe-and-flame symbol turns digital overload into a wearable warning signal."],
+  ["outer-bloom","OUTER BLOOM","placement","longsleeve","前胸与双袖 / Front & sleeves","340 × 420 mm",["数码直喷","Direct-to-garment"],[color("奶油白","Cream","#EDE6D7"),color("夜黑","Night","#111111")],"一朵来自轨道之外的花。","Cosmic orbit lines wrap a distorted flower, extending the artwork from body to sleeves."],
+  ["noise-atlas","NOISE ATLAS","identity","tee","后背中心 / Center back","360 × 460 mm",["反光浆印花","Reflective ink"],[color("黑","Black","#0D0D0D"),color("反光银","Reflective Silver","#B8BDC1")],"把城市噪声绘制成一张看不见的地图。","Field recordings and walking routes become an abstract topographic graphic."],
+  ["night-transit","NIGHT TRANSIT","allover","hoodie","后背延伸双袖 / Back to sleeves","760 × 540 mm",["夜光印花","Glow ink"],[color("深海蓝","Deep Navy","#10182D"),color("电光蓝","Electric Blue","#2358FF")],"夜间移动留下短暂的发光路径。","Transit lines stretch across the hoodie as a map that appears differently after dark."],
+  ["false-memory","FALSE MEMORY","illustration","tee","前胸 / Front","350 × 440 mm",["做旧丝网印刷","Distressed screen print"],[color("水洗灰","Washed Grey","#777773"),color("黑","Black","#111111")],"记忆会磨损，但不会完全消失。","A found portrait is repeatedly copied and erased until recognition turns into texture."],
+  ["electric-folk","ELECTRIC FOLK","allover","longsleeve","前胸、后背与袖口 / Body & cuffs","520 × 610 mm",["水性印花＋刺绣","Water-based print + embroidery"],[color("米白","Off White","#F0ECE0"),color("钴蓝","Cobalt","#1647D9"),color("朱红","Vermilion","#E44632")],"旧符号进入新的电路。","Naive folk symbols are redrawn as modular marks, with one motif translated into embroidery."],
+  ["acid-archive","ACID ARCHIVE","graphic","tee","前胸满幅 / Full front","390 × 500 mm",["双色丝网印刷","Two-color screen print"],[color("酸性绿","Acid Lime","#C7FF18"),color("黑","Black","#111111")],"把不存在的档案穿在身上。","Imagined stamps, index marks and damaged records form a dense graphic archive."],
+  ["silent-volume","SILENT VOLUME","placement","hoodie","后背 / Back","340 × 420 mm",["植绒印花","Velvet flock"],[color("黑","Black","#111111"),color("深黑","Deep Black","#050505")],"低调的材质也可以拥有体积。","A tonal geometric form relies on touch and changing light instead of loud color."],
+  ["plastic-ritual","PLASTIC RITUAL","identity","tee","前胸中心 / Center front","310 × 380 mm",["银色烫箔","Silver foil"],[color("白","White","#F7F7F4"),color("铬银","Chrome","#C9CDD0"),color("黑","Black","#111111")],"人造材质也有自己的仪式感。","A chrome botanical emblem treats synthetic surfaces as precious ceremonial objects."],
+  ["data-garden","DATA GARDEN","allover","longsleeve","前胸与双袖 / Front & sleeves","600 × 520 mm",["热转印","Heat transfer"],[color("钴蓝","Cobalt","#214CDB"),color("荧光绿","Neon Lime","#B7F52A")],"自然被压缩成格点后再次生长。","Pixel cells expand into a botanical grid that moves continuously across the garment."],
+  ["broken-halo","BROKEN HALO","placement","tee","后背 / Back","355 × 455 mm",["拔染印花","Discharge print"],[color("酒红","Burgundy","#6D1C2D"),color("米白","Warm White","#EEE7DA")],"不完整的光环仍然能够发亮。","A fractured halo frames imperfect hand marks as a symbol of unfinished growth."],
+  ["lunar-static","LUNAR STATIC","graphic","longsleeve","前胸与袖子 / Front & sleeve","410 × 520 mm",["反光印花","Reflective print"],[color("黑","Black","#111111"),color("银灰","Silver Grey","#AEB4BA")],"月光像失真的电视信号。","Lunar phases dissolve into broadcast noise and reappear under direct light."],
+  ["tender-damage","TENDER DAMAGE","illustration","hoodie","左胸与后背 / Chest & back","300 × 360 mm",["毛巾绣章＋印花","Chenille patch + print"],[color("奶油","Cream","#E8DDC9"),color("暗红","Dark Red","#8B2A2C")],"修补痕迹也是图案的一部分。","A soft chenille emblem sits over printed repair marks, celebrating visible mending."],
+  ["digital-moss","DIGITAL MOSS","allover","tee","满版 / All-over","全幅循环 / Full repeat",["水性满版印花","All-over water-based print"],[color("橄榄绿","Olive","#53613A"),color("苔绿","Moss","#99A96C")],"像素表面慢慢长出苔藓。","Organic clusters interrupt a strict pixel grid until the repeat feels alive."],
+  ["velvet-warning","VELVET WARNING","placement","hoodie","后背 / Back","370 × 450 mm",["植绒印花","Velvet flock"],[color("黑","Black","#0D0D0D"),color("紫黑","Black Violet","#251B2C")],"警告不一定需要高声表达。","A nearly invisible warning symbol appears through the contrast of matte and velvet."],
+  ["paper-tiger","PAPER TIGER","illustration","tee","前胸 / Front","340 × 430 mm",["仿旧胶浆","Vintage plastisol"],[color("旧纸白","Paper White","#E8E0CE"),color("炭黑","Charcoal","#262523")],"看似凶猛的形象也可能非常脆弱。","A roughly cut tiger is printed like a weathered gig poster, bold from afar and fragile up close."],
+  ["future-fossil","FUTURE FOSSIL","graphic","longsleeve","前胸与后背 / Front & back","380 × 470 mm",["金属墨印花","Metallic ink"],[color("石灰","Stone Grey","#AAA9A1"),color("金属黑","Metal Black","#3A3C3D")],"今天的接口会成为未来的化石。","Interface fragments are compressed into an archaeological plate for a machine age."],
+  ["blue-noise","BLUE NOISE","identity","tee","前胸中心 / Center front","300 × 340 mm",["白色发泡印花","White puff print"],[color("钴蓝","Cobalt","#1648D7"),color("白","White","#F6F5F0")],"噪声也可以形成清晰的节奏。","A compact rhythm of waves and gaps becomes tactile through a raised white surface."],
+  ["afterimage-club","AFTERIMAGE CLUB","illustration","hoodie","前胸与后背 / Front & back","320 × 390 mm",["荧光水浆","Fluorescent water-based ink"],[color("白","White","#F4F3EF"),color("荧光粉","Fluoro Pink","#FF3E9B")],"看过之后仍停留在视线里的俱乐部。","High-energy character marks are reduced to the colors that remain after looking away."],
+  ["organic-error","ORGANIC ERROR","allover","tee","满版 / All-over","全幅循环 / Full repeat",["环保涂料印花","Pigment print"],[color("沙色","Sand","#C7B99E"),color("泥黑","Mud Black","#2D2A25")],"自然的错误才形成真正的纹理。","Irregular hand-cut shapes refuse perfect repetition, producing a deliberately unstable repeat."],
+  ["midnight-bloom","MIDNIGHT BLOOM","placement","tee","后背 / Back","360 × 460 mm",["透明啫喱印花","Clear gel print"],[color("黑","Black","#090909"),color("透明亮面","Clear Gloss","#4A4A4A")],"只有在光线移动时才出现的夜花。","A dark bloom is revealed by gloss and reflection rather than additional pigment."],
+  ["local-weather","LOCAL WEATHER","identity","longsleeve","左胸与双袖 / Chest & sleeves","520 × 120 mm",["链式刺绣","Chain-stitch embroidery"],[color("板岩蓝","Slate Blue","#596778"),color("云白","Cloud","#E5E5DF")],"天气是每天最接近身体的公共信息。","Small weather symbols travel from chest to cuffs like a personal local forecast."],
+] as const;
+
+const garments: Record<string, Localized> = {
+  tee: zhEn("宽松短袖 T 恤", "Oversized T-shirt"),
+  hoodie: zhEn("宽松连帽卫衣", "Oversized hoodie"),
+  longsleeve: zhEn("宽松长袖上衣", "Oversized long-sleeve"),
+};
+
+const categories: Category[] = ["placement", "allover", "graphic", "illustration", "identity"];
+
+export const projects: Project[] = raw.map((item, index) => {
+  const [slug,title,category,garment,placement,size,techniques,colors,meaning,concept] = item;
+  return {
+    id: String(index + 1).padStart(2, "0"), slug, title, year: "2026",
+    category: (categories.includes(category as Category) ? category : "graphic") as Category,
+    featured: index < 8,
+    ratio: index % 5 === 0 ? "landscape" : index % 3 === 0 ? "square" : "portrait",
+    assets: { cover: `/projects/${slug}.jpg` },
+    production: { garment: garments[garment], placement: zhEn(placement.split(" / ")[0], placement.split(" / ")[1]), techniques: [zhEn(techniques[0], techniques[1])], size, colors: [...colors] },
+    story: { meaning: zhEn(meaning, concept.split(".")[0] + "."), concept: zhEn(meaning, concept) },
+  };
+});
+
+export const categoryLabels: Record<"all" | Category, Localized> = {
+  all: zhEn("全部", "ALL"), placement: zhEn("定位印花", "PLACEMENT"), allover: zhEn("满版纹样", "ALL-OVER"), graphic: zhEn("T恤图形", "GRAPHIC TEE"), illustration: zhEn("插画", "ILLUSTRATION"), identity: zhEn("视觉系统", "VISUAL IDENTITY"),
+};

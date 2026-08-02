@@ -7,11 +7,21 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://acid-pattern-lab.yujing01.chatgpt.site"),
-  title: "YOUR NAME — Pattern Designer / 图案设计师",
-  description: "A bilingual portfolio for fashion print, graphic design and illustration. 服装图案、平面与插画设计作品集。",
-  keywords: ["fashion pattern design", "服装图案设计", "graphic design", "illustration", "textile print"],
-  openGraph: { title: "YOUR NAME — Fashion Print Designer", description: "Fashion print, graphic design and illustration portfolio.", type: "website" },
-  twitter: { card: "summary", title: "YOUR NAME — Fashion Print Designer", description: "Fashion print, graphic design and illustration portfolio." },
+  title: "YOUR NAME — Fashion Print Designer / 服装图案设计师",
+  description: "A bilingual portfolio and concept case archive for fashion print, graphic design and illustration. 服装图案、平面与插画设计作品集。",
+  keywords: ["fashion print designer", "服装图案设计", "graphic design", "illustration", "textile print portfolio"],
+  openGraph: {
+    title: "YOUR NAME — Fashion Print Designer",
+    description: "24 concept studies across fashion print, graphics and illustration.",
+    type: "website",
+    images: [{ url: "/og.png", width: 1536, height: 1024, alt: "YOUR NAME fashion print portfolio" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "YOUR NAME — Fashion Print Designer",
+    description: "24 concept studies across fashion print, graphics and illustration.",
+    images: ["/og.png"],
+  },
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
