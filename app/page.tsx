@@ -161,7 +161,7 @@ export default function Home() {
     const selected = settings.heroSlugs
       .map(slug => portfolioProjects.find(project => project.slug === slug))
       .filter((project): project is ManagedProject => Boolean(project));
-    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 5);
+    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 3);
   }, [portfolioProjects, settings.heroSlugs]);
 
   useEffect(() => {
@@ -293,16 +293,24 @@ export default function Home() {
       <div className="hero-copy">
         <p className="eyebrow"><i />{t.eyebrow}</p>
         <h1 aria-label={`${t.heroA} ${t.heroB} ${t.heroC}`}><span>{t.heroA}</span><span className="outline">{t.heroB}</span><span>{t.heroC}</span></h1>
-        <span className="hero-script" aria-hidden="true">made by hand, built to wear.</span>
-        <div className="hero-bottom"><p>{settings.heroIntro[lang]}</p><a href="#cases" className="arrow-link">{t.enter}<b>↘</b></a></div>
+        <span className="hero-script" aria-hidden="true">made by hand — Y.N.</span>
+        <div className="hero-bottom"><p>{settings.heroIntro[lang]}</p></div>
       </div>
       <div className="hero-visual" aria-label="Selected concept fashion cases">
         {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
-          {index > 2 ? <div className="single-model" role="img" aria-label={`${project.title} single female fashion model`} style={modelCropStyle(project)} /> : <Image src={project.assets.cover} alt={`${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} unoptimized />}
+          <Image src={project.assets.cover} alt={`${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} unoptimized />
           <span>{project.id} / {project.title}</span>
         </button>)}
+        <figure className="hero-3d-card">
+          <Image src="/models/hero-3d-garments-v1.png" alt="Three conceptual 3D womenswear garments for print visualization" fill sizes="(max-width: 760px) 38vw, 16vw" unoptimized />
+          <figcaption>3D GARMENT STUDY / CLO</figcaption>
+        </figure>
+        <div className="hero-color-card" aria-hidden="true"><small>COLOR SYSTEM / 01</small><div><i /><i /><i /><i /></div><b>#C8FF19<br />#1746D3<br />#F83F99</b></div>
+        <div className="hero-type-card" aria-hidden="true"><span>TYPE STUDY</span><b>PRINT<br />SIGNAL</b><em>03 / 24</em></div>
+        <div className="hero-label-stack" aria-hidden="true"><span>WOMENSWEAR</span><span>PLACEMENT PRINT</span><span>2026 / CONCEPT</span></div>
         <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
       </div>
+      <a href="#cases" className="arrow-link hero-case-link">{t.enter}<b>↘</b></a>
       <div className="hero-foot"><span>{t.concept}</span><span>{t.scroll} ↓</span></div>
     </section>
 
@@ -312,6 +320,7 @@ export default function Home() {
       <div className="section-tag" data-reveal><span>01</span>POINT OF VIEW</div>
       <div className="manifesto" data-reveal><p>{settings.manifesto[lang]}</p><i>↳</i></div>
       <div className="about-detail" data-reveal><div className="about-label">{settings.displayName}<br />PATTERN DESIGNER<br />{settings.city}</div><p>{settings.about[lang]}</p></div>
+      <div className="fashion-tags about-fashion-tags" data-reveal aria-hidden="true"><span>FABRIC / COTTON JERSEY</span><span>PRINT SCALE / 380 × 480 MM</span><span>WOMENSWEAR / SS26</span></div>
     </section>
 
     <section className="skills" id="skills">
@@ -320,6 +329,7 @@ export default function Home() {
         <div className="service-column" data-reveal><h3>{t.serviceTitle}</h3>{services.map((service, index) => <div className="service-row" key={service[1]}><b>0{index + 1}</b><span>{lang === "zh" ? service[0] : service[1]}</span><i /></div>)}</div>
         <div className="process-column" data-reveal><h3>{t.processTitle}</h3>{workflow.map(item => <div className="process-row" key={item[0]}><b>{item[0]}</b><span>{lang === "zh" ? item[1] : item[2]}</span><em>→</em></div>)}</div>
       </div>
+      <div className="fashion-tags skill-fashion-tags" data-reveal aria-hidden="true"><span>COLOR SEPARATION / 04</span><span>REPEAT / 64 CM</span><span>CLO 3D FIT</span></div>
       <div className="software-grid">
         {settings.software.filter(tool => tool.enabled).map((tool, index) => <article className="software-card" data-reveal key={tool.id} style={{ "--delay": `${index * 55}ms` } as React.CSSProperties}>
           <div className="tool-code">{tool.code}</div><div><span>CORE TOOL 0{index + 1}</span><h3>{tool.name}</h3><p>{tool.description[lang]}</p></div><i>↗</i>
@@ -329,6 +339,7 @@ export default function Home() {
 
     <section className="cases" id="cases">
       <div className="cases-head" data-reveal><div className="section-tag"><span>03</span>CASE ARCHIVE</div><h2>{t.casesTitle}</h2><p>{t.casesIntro}</p></div>
+      <div className="archive-stickers" data-reveal aria-hidden="true"><span>PRINT ARCHIVE</span><span>24 / CONCEPT FILES</span><span>PROPOSED TECHNIQUE</span></div>
       <div className="filter-bar" role="toolbar" aria-label="Project categories">
         <div>{categories.map(item => <button aria-pressed={category === item} className={category === item ? "active" : ""} key={item} onClick={() => switchCategory(item)}>{item === "all" ? t.all : categoryLabels[item][lang]}</button>)}</div>
         <span>{t.loaded} {String(shown.length).padStart(2, "0")} / {String(filtered.length).padStart(2, "0")}</span>

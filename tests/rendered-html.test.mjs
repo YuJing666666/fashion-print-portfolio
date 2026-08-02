@@ -72,7 +72,10 @@ test("ships female lookbook hover states and a three-column rounded archive", as
   ]);
   assert.equal(modelAssets.filter(name => name.startsWith("female-lookbook-") && name.endsWith(".png")).length, 3);
   assert.match(page, /className="model-layer single-model"/);
-  assert.match(page, /made by hand, built to wear/);
+  assert.match(page, /made by hand — Y\.N\./);
+  assert.match(page, /hero-3d-garments-v1\.png/);
+  assert.match(page, /hero-color-card/);
+  assert.match(page, /fashion-tags/);
   assert.match(css, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(css, /border-radius:clamp\(16px,2vw,27px\)/);
   assert.match(css, /project-card:hover \.model-layer/);
@@ -84,13 +87,13 @@ test("expands cases from their card into split fixed-detail pages", async () => 
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
-  assert.match(layout, /La_Belle_Aurore/);
+  assert.match(layout, /Mrs_Saint_Delafield/);
   assert.match(page, /getBoundingClientRect/);
   assert.match(page, /--case-top/);
   assert.match(page, /PROJECT FILE/);
   assert.match(css, /@keyframes case-expand/);
   assert.match(css, /@keyframes specs-in/);
-  assert.match(css, /grid-template-columns:minmax\(0,1fr\) minmax\(370px,33vw\)/);
+  assert.match(css, /grid-template-columns:minmax\(0,1fr\) minmax\(300px,25vw\)/);
   assert.match(css, /background-size:400% 100%/);
   assert.match(css, /backdrop-filter:blur\(15px\)/);
   assert.match(css, /overflow:hidden; padding:62px 25px 18px/);
@@ -99,6 +102,8 @@ test("expands cases from their card into split fixed-detail pages", async () => 
   assert.match(css, /top:calc\(100svh - 69px\)/);
   assert.match(css, /\.hero-board:before/);
   assert.match(css, /width:min\(1120px,84vw\)/);
+  assert.match(css, /\.hero-case-link/);
+  await access(new URL("../public/models/hero-3d-garments-v1.png", import.meta.url));
 });
 
 test("ships a persistent system-aware night mode", async () => {
