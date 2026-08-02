@@ -84,14 +84,21 @@ test("expands cases from their card into split fixed-detail pages", async () => 
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
-  assert.match(layout, /Oooh_Baby/);
+  assert.match(layout, /La_Belle_Aurore/);
   assert.match(page, /getBoundingClientRect/);
   assert.match(page, /--case-top/);
   assert.match(page, /PROJECT FILE/);
   assert.match(css, /@keyframes case-expand/);
   assert.match(css, /@keyframes specs-in/);
-  assert.match(css, /grid-template-columns:minmax\(0,1fr\) minmax\(370px,34vw\)/);
+  assert.match(css, /grid-template-columns:minmax\(0,1fr\) minmax\(370px,33vw\)/);
   assert.match(css, /background-size:400% 100%/);
+  assert.match(css, /backdrop-filter:blur\(15px\)/);
+  assert.match(css, /overflow:hidden; padding:62px 25px 18px/);
+  assert.match(css, /border-radius:26px/);
+  assert.doesNotMatch(page, /hero-margin-note/);
+  assert.match(css, /top:calc\(100svh - 69px\)/);
+  assert.match(css, /\.hero-board:before/);
+  assert.match(css, /width:min\(1120px,84vw\)/);
 });
 
 test("ships a persistent system-aware night mode", async () => {

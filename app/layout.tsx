@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Oooh_Baby } from "next/font/google";
+import { Geist, Geist_Mono, La_Belle_Aurore } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-const handwriting = Oooh_Baby({ variable: "--font-hand", subsets: ["latin"], weight: "400" });
+const handwriting = La_Belle_Aurore({ variable: "--font-hand", subsets: ["latin"], weight: "400" });
 const themeScript = `(function(){try{var saved=localStorage.getItem('portfolio-theme');var theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;}catch(e){}})();`;
 
 export const metadata: Metadata = {

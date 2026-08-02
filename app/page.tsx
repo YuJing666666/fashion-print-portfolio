@@ -302,7 +302,6 @@ export default function Home() {
           <span>{project.id} / {project.title}</span>
         </button>)}
         <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
-        <span className="hero-margin-note" aria-hidden="true">print / silhouette / motion ↗</span>
       </div>
       <div className="hero-foot"><span>{t.concept}</span><span>{t.scroll} ↓</span></div>
     </section>
