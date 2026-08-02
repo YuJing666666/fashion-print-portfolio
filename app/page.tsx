@@ -121,7 +121,7 @@ const modelLookbooks = [
   "/models/female-lookbook-02.png",
   "/models/female-lookbook-03.png",
 ] as const;
-const modelPositions = ["0%", "28%", "72%", "100%"] as const;
+const modelPositions = ["0%", "33.333%", "66.667%", "100%"] as const;
 
 function modelVisual(project: Project) {
   const index = Math.max(0, Number(project.id) - 1);
@@ -131,12 +131,23 @@ function modelVisual(project: Project) {
   };
 }
 
+function modelCropStyle(project: Project) {
+  const visual = modelVisual(project);
+  return {
+    "--model-image": `url("${visual.src}")`,
+    "--model-x": visual.position,
+  } as React.CSSProperties;
+}
+
+type CaseOrigin = { top: number; right: number; bottom: number; left: number };
+
 export default function Home() {
   const [lang, setLang] = useState<Lang>("zh");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [category, setCategory] = useState<"all" | Category>("all");
   const [visible, setVisible] = useState(12);
   const [active, setActive] = useState<Project | null>(null);
+  const [caseOrigin, setCaseOrigin] = useState<CaseOrigin | null>(null);
   const [settings, setSettings] = useState(defaultSiteSettings);
   const [portfolioProjects, setPortfolioProjects] = useState<ManagedProject[]>(defaultManagedProjects);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -179,6 +190,7 @@ export default function Home() {
     url.searchParams.delete("case");
     history.pushState({}, "", url);
     setActive(null);
+    setCaseOrigin(null);
     window.setTimeout(() => openerRef.current?.focus(), 20);
   }, []);
 
@@ -208,6 +220,7 @@ export default function Home() {
   useEffect(() => {
     const syncCase = () => {
       const slug = new URLSearchParams(window.location.search).get("case");
+      setCaseOrigin(null);
       setActive(slug ? portfolioProjects.find(project => project.slug === slug) ?? null : null);
     };
     const frame = window.requestAnimationFrame(syncCase);
@@ -239,6 +252,9 @@ export default function Home() {
 
   const openProject = (project: Project, trigger: HTMLElement) => {
     openerRef.current = trigger;
+    const source = trigger.closest(".project-card") ?? trigger;
+    const rect = source.getBoundingClientRect();
+    setCaseOrigin({ top: rect.top, right: window.innerWidth - rect.right, bottom: window.innerHeight - rect.bottom, left: rect.left });
     const url = new URL(window.location.href);
     url.searchParams.set("case", project.slug);
     history.pushState({ case: project.slug }, "", url);
@@ -282,7 +298,7 @@ export default function Home() {
       </div>
       <div className="hero-visual" aria-label="Selected concept fashion cases">
         {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
-          <Image src={index > 2 ? modelVisual(project).src : project.assets.cover} alt={index > 2 ? `${project.title} female fashion print styling` : `${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} style={index > 2 ? { objectPosition: modelVisual(project).position } : undefined} unoptimized />
+          {index > 2 ? <div className="single-model" role="img" aria-label={`${project.title} single female fashion model`} style={modelCropStyle(project)} /> : <Image src={project.assets.cover} alt={`${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} unoptimized />}
           <span>{project.id} / {project.title}</span>
         </button>)}
         <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
@@ -323,7 +339,7 @@ export default function Home() {
           <button onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
             <div className="project-media">
               <Image className="pattern-layer" src={project.assets.cover} alt={`${project.title} print artwork preview`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" unoptimized />
-              <Image className="model-layer" src={modelVisual(project).src} alt={`${project.title} female model garment effect`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" style={{ objectPosition: modelVisual(project).position }} unoptimized />
+              <div className="model-layer single-model" role="img" aria-label={`${project.title} single female model garment effect`} style={modelCropStyle(project)} />
               <span className="case-kind">{project.featured ? t.featured : t.catalog}</span><span className="view-switch"><b>PRINT</b><i>↔</i><b>ON BODY</b></span><em>HOVER TO WEAR</em><i className="open-mark">↗</i>
             </div>
             <div className="project-meta"><span>{project.id}</span><div><h3>{project.title}</h3><p>{categoryLabels[project.category][lang]} · {project.year}</p></div><b>{t.open}</b></div>
@@ -341,12 +357,17 @@ export default function Home() {
 
     {active && <div className="drawer-layer" role="presentation">
       <button className="drawer-backdrop" onClick={closeProject} aria-label={t.close} />
-      <aside className="case-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <aside className="case-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" style={caseOrigin ? {
+        "--case-top": `${Math.max(0, caseOrigin.top)}px`,
+        "--case-right": `${Math.max(0, caseOrigin.right)}px`,
+        "--case-bottom": `${Math.max(0, caseOrigin.bottom)}px`,
+        "--case-left": `${Math.max(0, caseOrigin.left)}px`,
+      } as React.CSSProperties : undefined}>
         <button className="drawer-close" ref={closeRef} onClick={closeProject}>{t.close}<span>×</span></button>
         <div className="drawer-layout">
           <div className="drawer-visuals">
             <div className="drawer-intro"><span>{active.id} / {active.year}</span><p>{t.drawerLabel}</p><h2 id="drawer-title">{active.title}</h2></div>
-            <figure className="case-hero model-case-hero"><Image src={modelVisual(active).src} alt={`${active.title} female model garment effect`} fill sizes="(max-width: 800px) 100vw, 54vw" priority style={{ objectPosition: modelVisual(active).position }} unoptimized /><figcaption>{t.application} / 01</figcaption></figure>
+            <figure className="case-hero model-case-hero"><div className="single-model" role="img" aria-label={`${active.title} single female model garment effect`} style={modelCropStyle(active)} /><figcaption>{t.application} / 01</figcaption></figure>
             <div className="visual-section"><div className="visual-heading"><span>02</span><h3>{t.original}</h3></div>
               <div className="artwork-grid">
                 <figure className="process-art"><Image src={active.assets.process ?? active.assets.cover} alt={`${active.title} artwork and process study`} fill sizes="(max-width: 800px) 100vw, 38vw" unoptimized /></figure>
@@ -359,6 +380,7 @@ export default function Home() {
             <div className="drawer-end"><span>END OF CASE {active.id}</span><i>✦</i></div>
           </div>
           <div className="drawer-specs">
+            <div className="spec-title"><span>PROJECT FILE / {active.id}</span><h3>{active.title}</h3><p>{active.story.meaning[lang]}</p></div>
             <div className="spec-top"><span>{active.featured ? t.featured : t.catalog}</span><b>{categoryLabels[active.category][lang]}</b></div>
             <dl>
               <div><dt>{t.garment}</dt><dd>{active.production.garment[lang]}</dd></div>

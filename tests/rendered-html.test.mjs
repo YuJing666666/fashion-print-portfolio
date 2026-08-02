@@ -39,7 +39,7 @@ test("ships 24 concept boards and the required interaction contracts", async () 
   assert.match(page, /aria-modal="true"/);
   assert.match(page, /loading="lazy"/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
-  assert.match(css, /width:min\(82vw,1480px\)/);
+  assert.match(css, /\.case-drawer[^}]*width:100vw/);
   await access(new URL("../public/og.png", import.meta.url));
 });
 
@@ -71,11 +71,27 @@ test("ships female lookbook hover states and a three-column rounded archive", as
     readdir(new URL("../public/models/", import.meta.url)),
   ]);
   assert.equal(modelAssets.filter(name => name.startsWith("female-lookbook-") && name.endsWith(".png")).length, 3);
-  assert.match(page, /className="model-layer"/);
+  assert.match(page, /className="model-layer single-model"/);
   assert.match(page, /made by hand, built to wear/);
   assert.match(css, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(css, /border-radius:clamp\(16px,2vw,27px\)/);
   assert.match(css, /project-card:hover \.model-layer/);
+});
+
+test("expands cases from their card into split fixed-detail pages", async () => {
+  const [layout, page, css] = await Promise.all([
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.match(layout, /Oooh_Baby/);
+  assert.match(page, /getBoundingClientRect/);
+  assert.match(page, /--case-top/);
+  assert.match(page, /PROJECT FILE/);
+  assert.match(css, /@keyframes case-expand/);
+  assert.match(css, /@keyframes specs-in/);
+  assert.match(css, /grid-template-columns:minmax\(0,1fr\) minmax\(370px,34vw\)/);
+  assert.match(css, /background-size:400% 100%/);
 });
 
 test("ships a persistent system-aware night mode", async () => {

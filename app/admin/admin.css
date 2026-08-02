@@ -50,7 +50,7 @@
 .type-poster { overflow:hidden; background:#121212!important; color:#fff; }
 .type-poster small { font:550 .5rem/1 var(--font-geist-mono); }
 .type-poster b { position:absolute; top:70px; left:22px; font-size:7.4rem; font-weight:900; line-height:.75; letter-spacing:-.1em; }
-.type-poster em { position:absolute; z-index:2; top:155px; right:35px; color:var(--admin-acid); font-family:var(--font-hand),cursive; font-size:4.2rem; font-weight:650; transform:rotate(-8deg); }
+.type-poster em { position:absolute; z-index:2; top:155px; right:35px; color:var(--admin-acid); font-family:var(--font-hand),cursive; font-size:4.8rem; font-weight:400; transform:rotate(-8deg); }
 .type-poster>span { position:absolute; right:28px; bottom:28px; font:250 1rem/1 var(--font-geist-mono); letter-spacing:.12em; }
 
 .editor-panel { max-width:1300px; }
@@ -91,7 +91,7 @@
 .type-preview strong { display:block; margin-top:58px; font-size:clamp(4rem,8vw,8.5rem); line-height:.68; letter-spacing:-.095em; }
 .type-preview strong i { color:transparent; font-weight:250; font-style:normal; -webkit-text-stroke:1px #fff; }
 .type-preview em { position:absolute; z-index:2; right:7%; bottom:87px; color:var(--preview-acid); font-size:2.4rem; font-style:normal; transform:rotate(-5deg); }
-.type-preview em.hand { font-family:var(--font-hand),cursive; font-size:4.2rem; font-weight:650; }
+.type-preview em.hand { font-family:var(--font-hand),cursive; font-size:4.8rem; font-weight:400; }
 .type-preview>span { position:absolute; bottom:25px; left:25px; font:250 .48rem/1 var(--font-geist-mono); letter-spacing:.12em; }
 
 .software-editor { display:grid; grid-template-columns:repeat(2,1fr); border-top:1px solid #111; border-left:1px solid #111; }
@@ -101,7 +101,7 @@
 .software-index>span { display:block; margin:15px 0; color:#777; font:600 .45rem/1 var(--font-geist-mono); }
 .software-index label { display:flex; align-items:center; gap:6px; font:600 .48rem/1 var(--font-geist-mono); }
 .software-index label input { width:16px; }
-.hand-input { height:57px!important; padding:0!important; border:0!important; border-bottom:1px solid #999!important; background:transparent!important; font-family:var(--font-hand),cursive!important; font-size:2.1rem!important; font-weight:650!important; }
+.hand-input { height:57px!important; padding:0!important; border:0!important; border-bottom:1px solid #999!important; background:transparent!important; font-family:var(--font-hand),cursive!important; font-size:2.55rem!important; font-weight:400!important; }
 
 .projects-panel { display:grid; grid-template-columns:minmax(370px,.72fr) minmax(520px,1.28fr); gap:16px; align-items:start; }
 .project-list { max-height:calc(100vh - 150px); overflow-y:auto; border:1px solid #111; background:#f5f5f1; }
