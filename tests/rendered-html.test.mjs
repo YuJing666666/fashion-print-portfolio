@@ -81,6 +81,26 @@ test("ships female lookbook hover states and a three-column rounded archive", as
   assert.match(css, /project-card:hover \.model-layer/);
 });
 
+test("ships 13 centered 16:9 garment base models on the specified background", async () => {
+  const [page, css, baseAssets] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readdir(new URL("../public/models/garment-bases-v1/", import.meta.url)),
+  ]);
+  const pngs = baseAssets.filter(name => name.endsWith(".png"));
+  assert.equal(pngs.length, 13);
+  assert.match(page, /WOMENSWEAR BASES/);
+  assert.match(page, /garmentBases\.map/);
+  assert.match(css, /aspect-ratio:16\/9/);
+  assert.match(css, /object-position:50% 50%/);
+  assert.match(css, /background:#F5F0F0/);
+  for (const name of pngs) {
+    const file = await readFile(new URL(`../public/models/garment-bases-v1/${name}`, import.meta.url));
+    assert.equal(file.readUInt32BE(16), 1672, `${name} width`);
+    assert.equal(file.readUInt32BE(20), 941, `${name} height`);
+  }
+});
+
 test("expands cases from their card into split fixed-detail pages", async () => {
   const [layout, page, css] = await Promise.all([
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
