@@ -63,3 +63,17 @@ test("ships the persistent content console and mixed typography system", async (
   await access(new URL("../drizzle/0000_redundant_puppet_master.sql", import.meta.url));
   await access(new URL("../drizzle/0001_woozy_pandemic.sql", import.meta.url));
 });
+
+test("ships female lookbook hover states and a three-column rounded archive", async () => {
+  const [page, css, modelAssets] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readdir(new URL("../public/models/", import.meta.url)),
+  ]);
+  assert.equal(modelAssets.filter(name => name.startsWith("female-lookbook-") && name.endsWith(".png")).length, 3);
+  assert.match(page, /className="model-layer"/);
+  assert.match(page, /made by hand, built to wear/);
+  assert.match(css, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(css, /border-radius:clamp\(16px,2vw,27px\)/);
+  assert.match(css, /project-card:hover \.model-layer/);
+});

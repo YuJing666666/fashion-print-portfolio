@@ -116,6 +116,20 @@ const workflow = [
 ] as const;
 
 const categories: ("all" | Category)[] = ["all", "placement", "allover", "graphic", "illustration", "identity"];
+const modelLookbooks = [
+  "/models/female-lookbook-01.png",
+  "/models/female-lookbook-02.png",
+  "/models/female-lookbook-03.png",
+] as const;
+const modelPositions = ["0%", "28%", "72%", "100%"] as const;
+
+function modelVisual(project: Project) {
+  const index = Math.max(0, Number(project.id) - 1);
+  return {
+    src: modelLookbooks[Math.floor(index / 4) % modelLookbooks.length],
+    position: modelPositions[index % modelPositions.length],
+  };
+}
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>("zh");
@@ -135,7 +149,7 @@ export default function Home() {
     const selected = settings.heroSlugs
       .map(slug => portfolioProjects.find(project => project.slug === slug))
       .filter((project): project is ManagedProject => Boolean(project));
-    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 3);
+    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 5);
   }, [portfolioProjects, settings.heroSlugs]);
 
   useEffect(() => {
@@ -251,14 +265,16 @@ export default function Home() {
       <div className="hero-copy">
         <p className="eyebrow"><i />{t.eyebrow}</p>
         <h1 aria-label={`${t.heroA} ${t.heroB} ${t.heroC}`}><span>{t.heroA}</span><span className="outline">{t.heroB}</span><span>{t.heroC}</span></h1>
+        <span className="hero-script" aria-hidden="true">made by hand, built to wear.</span>
         <div className="hero-bottom"><p>{settings.heroIntro[lang]}</p><a href="#cases" className="arrow-link">{t.enter}<b>↘</b></a></div>
       </div>
       <div className="hero-visual" aria-label="Selected concept fashion cases">
         {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
-          <Image src={project.assets.cover} alt={`${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} unoptimized />
+          <Image src={index > 2 ? modelVisual(project).src : project.assets.cover} alt={index > 2 ? `${project.title} female fashion print styling` : `${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} style={index > 2 ? { objectPosition: modelVisual(project).position } : undefined} unoptimized />
           <span>{project.id} / {project.title}</span>
         </button>)}
         <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
+        <span className="hero-margin-note" aria-hidden="true">print / silhouette / motion ↗</span>
       </div>
       <div className="hero-foot"><span>{t.concept}</span><span>{t.scroll} ↓</span></div>
     </section>
@@ -291,9 +307,13 @@ export default function Home() {
         <span>{t.loaded} {String(shown.length).padStart(2, "0")} / {String(filtered.length).padStart(2, "0")}</span>
       </div>
       <div className="masonry">
-        {shown.map(project => <article className={`project-card ${project.ratio}`} data-reveal key={project.slug}>
+        {shown.map(project => <article className="project-card" data-reveal key={project.slug}>
           <button onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
-            <div className="project-media"><Image src={project.assets.cover} alt={`${project.title} concept apparel case with model and technical views`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" unoptimized /><span>{project.featured ? t.featured : t.catalog}</span><i>↗</i></div>
+            <div className="project-media">
+              <Image className="pattern-layer" src={project.assets.cover} alt={`${project.title} print artwork preview`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" unoptimized />
+              <Image className="model-layer" src={modelVisual(project).src} alt={`${project.title} female model garment effect`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" style={{ objectPosition: modelVisual(project).position }} unoptimized />
+              <span className="case-kind">{project.featured ? t.featured : t.catalog}</span><span className="view-switch"><b>PRINT</b><i>↔</i><b>ON BODY</b></span><em>HOVER TO WEAR</em><i className="open-mark">↗</i>
+            </div>
             <div className="project-meta"><span>{project.id}</span><div><h3>{project.title}</h3><p>{categoryLabels[project.category][lang]} · {project.year}</p></div><b>{t.open}</b></div>
           </button>
         </article>)}
@@ -314,7 +334,7 @@ export default function Home() {
         <div className="drawer-layout">
           <div className="drawer-visuals">
             <div className="drawer-intro"><span>{active.id} / {active.year}</span><p>{t.drawerLabel}</p><h2 id="drawer-title">{active.title}</h2></div>
-            <figure className="case-hero"><Image src={active.assets.cover} alt={`${active.title} full concept case board`} fill sizes="(max-width: 800px) 100vw, 54vw" priority unoptimized /><figcaption>{t.application} / 01</figcaption></figure>
+            <figure className="case-hero model-case-hero"><Image src={modelVisual(active).src} alt={`${active.title} female model garment effect`} fill sizes="(max-width: 800px) 100vw, 54vw" priority style={{ objectPosition: modelVisual(active).position }} unoptimized /><figcaption>{t.application} / 01</figcaption></figure>
             <div className="visual-section"><div className="visual-heading"><span>02</span><h3>{t.original}</h3></div>
               <div className="artwork-grid">
                 <figure className="process-art"><Image src={active.assets.process ?? active.assets.cover} alt={`${active.title} artwork and process study`} fill sizes="(max-width: 800px) 100vw, 38vw" unoptimized /></figure>
