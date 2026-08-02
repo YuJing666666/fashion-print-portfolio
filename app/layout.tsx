@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Mrs_Saint_Delafield } from "next/font/google";
+import { Geist, Geist_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-const handwriting = Mrs_Saint_Delafield({ variable: "--font-hand", subsets: ["latin"], weight: "400" });
+const handwriting = Caveat({ variable: "--font-hand", subsets: ["latin"], weight: "700" });
 const themeScript = `(function(){try{var saved=localStorage.getItem('portfolio-theme');var theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;}catch(e){}})();`;
 
 export const metadata: Metadata = {

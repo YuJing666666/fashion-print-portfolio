@@ -127,13 +127,19 @@ export const defaultSiteSettings: SiteSettings = {
   ),
   accentColor: "#c8ff19",
   heroWeight: "900",
-  handwrittenSoftware: true,
+  handwrittenSoftware: false,
   heroSlugs: ["static-garden", "signal-burn", "electric-folk"],
   software: [
     { id: "illustrator", code: "Ai", name: "Adobe Illustrator", description: zhEn("矢量图形、技术三视图与连续纹样", "VECTOR GRAPHICS, TECH FLATS & REPEATS"), enabled: true },
     { id: "photoshop", code: "Ps", name: "Adobe Photoshop", description: zhEn("图像合成、上身效果与色彩分离", "COMPOSITING, MOCKUPS & COLOR SEPARATION"), enabled: true },
     { id: "clo3d", code: "CLO", name: "CLO 3D", description: zhEn("服装版型、面料垂感与三维试衣", "PATTERN, FABRIC DRAPE & 3D FITTING"), enabled: true },
     { id: "style3d", code: "S3D", name: "Style3D", description: zhEn("数字样衣、材质预览与动态展示", "DIGITAL SAMPLES, MATERIALS & MOTION"), enabled: true },
+    { id: "codex", code: "CDX", name: "Codex", description: zhEn("AI 编程辅助 — 自动化与脚本生成", "AI PAIR PROGRAMMING & SCRIPTING"), enabled: true },
+    { id: "gemini", code: "GEM", name: "Gemini", description: zhEn("AI 图像理解与多模态研究", "AI IMAGE UNDERSTANDING & RESEARCH"), enabled: true },
+    { id: "claudecode", code: "CC", name: "Claude Code", description: zhEn("AI 代码助手 — 工具链与工作流", "AI CODE ASSISTANT — TOOLING & WORKFLOW"), enabled: true },
+    { id: "workbuddy", code: "WB", name: "WorkBuddy", description: zhEn("AI 智能体 — 协同设计与内容生产", "AI AGENT — COLLABORATIVE DESIGN & CONTENT"), enabled: true },
+    { id: "trae", code: "TRE", name: "TRAE", description: zhEn("AI 原型与界面快速搭建", "AI PROTOTYPING & UI"), enabled: true },
+    { id: "catpawai", code: "CPW", name: "CatPawAI", description: zhEn("AI 视觉生成 — 概念图与素材探索", "AI VISUAL GENERATION — CONCEPT & ASSETS"), enabled: true },
   ],
 };
 

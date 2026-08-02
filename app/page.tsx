@@ -200,6 +200,24 @@ export default function Home() {
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
   }, [lang]);
 
+  // 半调揭示效果：鼠标划过淡淡照出底下的荧光色半调涂鸦图案
+  useEffect(() => {
+    let raf = 0;
+    let lastX = 0, lastY = 0;
+    const update = () => {
+      document.documentElement.style.setProperty("--fx", `${lastX}px`);
+      document.documentElement.style.setProperty("--fy", `${lastY}px`);
+      raf = 0;
+    };
+    const onMove = (e: MouseEvent) => {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (!raf) raf = window.requestAnimationFrame(update);
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => { window.removeEventListener("mousemove", onMove); if (raf) window.cancelAnimationFrame(raf); };
+  }, []);
+
   useEffect(() => {
     const reveal = new IntersectionObserver(entries => entries.forEach(entry => {
       if (entry.isIntersecting) entry.target.classList.add("is-visible");
@@ -276,7 +294,7 @@ export default function Home() {
   >
     <header className="site-header">
       <a className="wordmark" href="#top"><b>{settings.displayName}.</b><span>FASHION PRINT DESIGNER</span></a>
-      <div className="page-switch" aria-label="Page switch"><Link className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</Link><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link></div>
+      <div className="page-switch" aria-label="Page switch"><Link className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</Link><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
       <nav aria-label="Primary navigation">
         {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id}>{t.nav[index]}</a>)}
       </nav>
@@ -300,7 +318,7 @@ export default function Home() {
       </div>
       <div className="hero-visual" aria-label="Selected concept fashion cases">
         {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
-          <Image src={project.assets.cover} alt={`${project.title} concept garment board`} fill sizes="(max-width: 760px) 65vw, 32vw" priority={index === 0} unoptimized />
+          <div className="single-model" role="img" aria-label={`${project.title} single female model garment effect`} style={modelCropStyle(project)} />
           <span>{project.id} / {project.title}</span>
         </button>)}
         <figure className="hero-3d-card">
@@ -312,6 +330,16 @@ export default function Home() {
         <div className="hero-label-stack" aria-hidden="true"><span>WOMENSWEAR</span><span>PLACEMENT PRINT</span><span>2026 / CONCEPT</span></div>
         <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
       </div>
+
+      {/* 服装设计标注：蚂蚁线 + 尺寸标识 */}
+      <div className="crosshair tl" aria-hidden="true" />
+      <div className="crosshair tr" aria-hidden="true" />
+      <div className="crosshair bl" aria-hidden="true" />
+      <div className="crosshair br" aria-hidden="true" />
+      <div className="dimension horiz" style={{ position:"absolute", top:"18vh", right:"2.8vw" }} aria-hidden="true"><span>380 × 480 MM</span></div>
+      <div className="dimension vert" style={{ position:"absolute", top:"calc(18vh + 60px)", right:"calc(2.8vw - 16px)" }} aria-hidden="true"><i /><i /></div>
+      <div className="grain-line" style={{ position:"absolute", bottom:"120px", right:"48vw" }} aria-hidden="true">GRAIN LINE</div>
+      <span className="tech-tag" style={{ position:"absolute", top:"78px", right:"2.8vw" }} aria-hidden="true">SS26 / CONCEPT</span>
       <a href="#cases" className="arrow-link hero-case-link">{t.enter}<b>↘</b></a>
       <div className="hero-foot"><span>{t.concept}</span><span>{t.scroll} ↓</span></div>
     </section>
@@ -325,19 +353,28 @@ export default function Home() {
       <div className="fashion-tags about-fashion-tags" data-reveal aria-hidden="true"><span>FABRIC / COTTON JERSEY</span><span>PRINT SCALE / 380 × 480 MM</span><span>WOMENSWEAR / SS26</span></div>
     </section>
 
+    <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
+
     <section className="skills" id="skills">
       <div className="skills-head" data-reveal><div className="section-tag"><span>02</span>CAPABILITY SYSTEM</div><h2>{t.softwareTitle}</h2><p>{t.softwareNote}</p><em className="hand-note">tools become visual language ↗</em></div>
-      <div className="services-grid">
-        <div className="service-column" data-reveal><h3>{t.serviceTitle}</h3>{services.map((service, index) => <div className="service-row" key={service[1]}><b>0{index + 1}</b><span>{lang === "zh" ? service[0] : service[1]}</span><i /></div>)}</div>
-        <div className="process-column" data-reveal><h3>{t.processTitle}</h3>{workflow.map(item => <div className="process-row" key={item[0]}><b>{item[0]}</b><span>{lang === "zh" ? item[1] : item[2]}</span><em>→</em></div>)}</div>
-      </div>
       <div className="fashion-tags skill-fashion-tags" data-reveal aria-hidden="true"><span>COLOR SEPARATION / 04</span><span>REPEAT / 64 CM</span><span>CLO 3D FIT</span></div>
-      <div className="software-grid">
-        {settings.software.filter(tool => tool.enabled).map((tool, index) => <article className="software-card" data-reveal key={tool.id} style={{ "--delay": `${index * 55}ms` } as React.CSSProperties}>
-          <div className="tool-code">{tool.code}</div><div><span>CORE TOOL 0{index + 1}</span><h3>{tool.name}</h3><p>{tool.description[lang]}</p></div><i>↗</i>
-        </article>)}
+      <div className="skills-body">
+        <div className="software-column" data-reveal>
+          <h3 className="column-title">{lang === "zh" ? "掌握软件" : "SOFTWARE"}</h3>
+          <div className="software-grid">
+            {settings.software.filter(tool => tool.enabled).map((tool, index) => <article className="software-card" data-reveal key={tool.id} style={{ "--delay": `${index * 45}ms` } as React.CSSProperties}>
+              <div className="tool-code">{tool.code}</div><div><span>CORE TOOL 0{index + 1}</span><h3>{tool.name}</h3><p>{tool.description[lang]}</p></div><i>↗</i>
+            </article>)}
+          </div>
+        </div>
+        <div className="services-column" data-reveal>
+          <div className="service-block"><h3 className="column-title">{t.serviceTitle}</h3>{services.map((service, index) => <div className="service-row" key={service[1]}><b>0{index + 1}</b><span>{lang === "zh" ? service[0] : service[1]}</span><i /></div>)}</div>
+          <div className="process-block"><h3 className="column-title">{t.processTitle}</h3>{workflow.map(item => <div className="process-row" key={item[0]}><b>{item[0]}</b><span>{lang === "zh" ? item[1] : item[2]}</span><em>→</em></div>)}</div>
+        </div>
       </div>
     </section>
+
+    <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
 
     <section className="cases" id="cases">
       <div className="cases-head" data-reveal><div className="section-tag"><span>03</span>CASE ARCHIVE</div><h2>{t.casesTitle}</h2><p>{t.casesIntro}</p></div>
@@ -350,9 +387,8 @@ export default function Home() {
         {shown.map(project => <article className="project-card" data-reveal key={project.slug}>
           <button onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
             <div className="project-media">
-              <Image className="pattern-layer" src={project.assets.cover} alt={`${project.title} print artwork preview`} fill sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw" loading="lazy" unoptimized />
               <div className="model-layer single-model" role="img" aria-label={`${project.title} single female model garment effect`} style={modelCropStyle(project)} />
-              <span className="case-kind">{project.featured ? t.featured : t.catalog}</span><span className="view-switch"><b>PRINT</b><i>↔</i><b>ON BODY</b></span><em>HOVER TO WEAR</em><i className="open-mark">↗</i>
+              <span className="case-kind">{project.featured ? t.featured : t.catalog}</span><i className="open-mark">↗</i>
             </div>
             <div className="project-meta"><span>{project.id}</span><div><h3>{project.title}</h3><p>{categoryLabels[project.category][lang]} · {project.year}</p></div><b>{t.open}</b></div>
           </button>
@@ -360,6 +396,8 @@ export default function Home() {
       </div>
       <div className="load-sentinel" ref={sentinelRef} aria-hidden="true"><span /></div>
     </section>
+
+    <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
 
     <section className="contact" id="contact">
       <p>{t.contactKicker}</p><h2>{t.contactTitle.split("\n").map(line => <span key={line}>{line}</span>)}</h2>
@@ -380,15 +418,6 @@ export default function Home() {
           <div className="drawer-visuals">
             <div className="drawer-intro"><span>{active.id} / {active.year}</span><p>{t.drawerLabel}</p><h2 id="drawer-title">{active.title}</h2></div>
             <figure className="case-hero model-case-hero"><div className="single-model" role="img" aria-label={`${active.title} single female model garment effect`} style={modelCropStyle(active)} /><figcaption>{t.application} / 01</figcaption></figure>
-            <div className="visual-section"><div className="visual-heading"><span>02</span><h3>{t.original}</h3></div>
-              <div className="artwork-grid">
-                <figure className="process-art"><Image src={active.assets.process ?? active.assets.cover} alt={`${active.title} artwork and process study`} fill sizes="(max-width: 800px) 100vw, 38vw" unoptimized /></figure>
-                <div className="color-art" style={{ background: `linear-gradient(135deg, ${active.production.colors.map(color => color.hex).join(",")})` }}><span>{active.title}</span><b>{active.production.size}</b></div>
-              </div>
-            </div>
-            <div className="visual-section"><div className="visual-heading"><span>03</span><h3>{t.technical}</h3></div>
-              <div className="three-view">{[t.front, t.side, t.back].map((label, index) => <figure key={label}><div><Image src={active.assets.cover} alt={`${active.title} ${label} technical garment view`} fill sizes="20vw" style={{ objectPosition: `${18 + index * 32}% center` }} unoptimized /></div><figcaption>{label}</figcaption></figure>)}</div>
-            </div>
             <div className="drawer-end"><span>END OF CASE {active.id}</span><i>✦</i></div>
           </div>
           <div className="drawer-specs">
@@ -407,5 +436,8 @@ export default function Home() {
         </div>
       </aside>
     </div>}
+
+    {/* 半调揭示层 */}
+    <div className="halftone-reveal" aria-hidden="true" />
   </main>;
 }
