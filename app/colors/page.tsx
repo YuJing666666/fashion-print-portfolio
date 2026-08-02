@@ -218,6 +218,7 @@ export default function ColorLibraryPage() {
       <div className="page-switch" aria-label="Page switch">
         <Link href="/">{t.portfolio}</Link>
         <Link href="/bases">{t.bases}</Link>
+        <Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link>
         <Link className="active" href="/colors">{t.colors}</Link>
       </div>
       <div className="header-actions">

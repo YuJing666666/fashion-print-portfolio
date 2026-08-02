@@ -294,7 +294,7 @@ export default function Home() {
   >
     <header className="site-header">
       <a className="wordmark" href="#top"><b>{settings.displayName}.</b><span>FASHION PRINT DESIGNER</span></a>
-      <div className="page-switch" aria-label="Page switch"><Link className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</Link><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
+      <div className="page-switch" aria-label="Page switch"><Link className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</Link><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link><Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
       <nav aria-label="Primary navigation">
         {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id}>{t.nav[index]}</a>)}
       </nav>
