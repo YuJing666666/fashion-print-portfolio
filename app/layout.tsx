@@ -6,7 +6,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://yourname.design"),
+  metadataBase: new URL("https://acid-pattern-lab.yujing01.chatgpt.site"),
   title: "YOUR NAME — Pattern Designer / 图案设计师",
   description: "An acid-colored visual lab for fashion pattern, graphic design and illustration. 酸性色彩服装图案、平面与插画设计作品集。",
   keywords: ["fashion pattern design", "服装图案设计", "graphic design", "illustration", "textile print"],
