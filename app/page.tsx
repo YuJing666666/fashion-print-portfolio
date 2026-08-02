@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   categoryLabels,
@@ -30,8 +31,6 @@ const copy = {
     processTitle: "工作流程",
     softwareTitle: "软件与执行能力",
     softwareNote: "能力说明以常用工作任务呈现，不使用虚构百分比。",
-    basesTitle: "女装基模库",
-    basesIntro: "13 个无图案服装基模，统一采用 16:9 横幅、居中构图与 #F5F0F0 底色，为后续印花定位、配色和上身测试提供一致基础。",
     casesTitle: "24 个图案实验",
     casesIntro: "8 个深度主案例 + 16 个目录案例。所有图片为统一生成的概念展示，不代表真实客户或量产成果。",
     all: "全部",
@@ -76,8 +75,6 @@ const copy = {
     processTitle: "PROCESS",
     softwareTitle: "SOFTWARE & EXECUTION",
     softwareNote: "Capabilities are described through real tasks—not invented proficiency percentages.",
-    basesTitle: "WOMENSWEAR BASES",
-    basesIntro: "13 unprinted garment bases in a consistent 16:9 centered format on #F5F0F0, ready for print placement, color and application studies.",
     casesTitle: "24 PRINT EXPERIMENTS",
     casesIntro: "8 in-depth studies + 16 catalog cases. Every image is a unified concept presentation, not a real client or production claim.",
     all: "ALL",
@@ -117,22 +114,6 @@ const workflow = [
   ["01", "研究与采样", "RESEARCH & SAMPLING"], ["02", "概念与草图", "CONCEPT & SKETCH"],
   ["03", "图形系统", "GRAPHIC SYSTEM"], ["04", "上身与三视图", "APPLICATION & FLATS"],
   ["05", "工艺建议", "PRODUCTION PROPOSAL"],
-] as const;
-
-const garmentBases = [
-  { slug: "outerwear", zh: "外套", en: "OUTERWEAR", src: "/models/garment-bases-v1/outerwear.png" },
-  { slug: "top", zh: "上衣", en: "TOP", src: "/models/garment-bases-v1/top.png" },
-  { slug: "tshirt", zh: "T 恤", en: "T-SHIRT", src: "/models/garment-bases-v1/tshirt.png" },
-  { slug: "knit-top", zh: "针织上衣", en: "KNIT TOP", src: "/models/garment-bases-v1/knit-top.png" },
-  { slug: "camisole", zh: "吊带 / 背心", en: "CAMISOLE / VEST", src: "/models/garment-bases-v1/camisole.png" },
-  { slug: "hoodie", zh: "卫衣", en: "HOODIE", src: "/models/garment-bases-v1/hoodie.png" },
-  { slug: "dress", zh: "连衣裙", en: "DRESS", src: "/models/garment-bases-v1/dress.png" },
-  { slug: "skirt", zh: "半身裙", en: "SKIRT", src: "/models/garment-bases-v1/skirt.png" },
-  { slug: "trousers", zh: "裤子", en: "TROUSERS", src: "/models/garment-bases-v1/trousers.png" },
-  { slug: "shorts", zh: "短裤", en: "SHORTS", src: "/models/garment-bases-v1/shorts.png" },
-  { slug: "jumpsuit", zh: "连体装", en: "JUMPSUIT", src: "/models/garment-bases-v1/jumpsuit.png" },
-  { slug: "lingerie", zh: "内衣", en: "UNDERWEAR", src: "/models/garment-bases-v1/lingerie.png" },
-  { slug: "yoga-set", zh: "瑜伽服", en: "YOGA WEAR", src: "/models/garment-bases-v1/yoga-set.png" },
 ] as const;
 
 const categories: ("all" | Category)[] = ["all", "placement", "allover", "graphic", "illustration", "identity"];
@@ -295,6 +276,7 @@ export default function Home() {
   >
     <header className="site-header">
       <a className="wordmark" href="#top"><b>{settings.displayName}.</b><span>FASHION PRINT DESIGNER</span></a>
+      <div className="page-switch" aria-label="Page switch"><Link className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</Link><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link></div>
       <nav aria-label="Primary navigation">
         {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id}>{t.nav[index]}</a>)}
       </nav>
@@ -357,18 +339,8 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="garment-library" id="bases">
-      <div className="garment-library-head" data-reveal><div className="section-tag"><span>03</span>GARMENT BASE SYSTEM</div><h2>{t.basesTitle}</h2><p>{t.basesIntro}</p></div>
-      <div className="garment-grid">
-        {garmentBases.map((garment, index) => <figure className="garment-card" data-reveal key={garment.slug} style={{ "--delay": `${(index % 3) * 65}ms` } as React.CSSProperties}>
-          <div className="garment-media"><Image src={garment.src} alt={`${garment.zh} / ${garment.en} unprinted 3D garment base`} fill sizes="(max-width: 720px) 100vw, (max-width: 1080px) 50vw, 33vw" loading="lazy" unoptimized /></div>
-          <figcaption><span>BASE {String(index + 1).padStart(2, "0")}</span><h3>{lang === "zh" ? garment.zh : garment.en}</h3><b>16:9 / #F5F0F0</b></figcaption>
-        </figure>)}
-      </div>
-    </section>
-
     <section className="cases" id="cases">
-      <div className="cases-head" data-reveal><div className="section-tag"><span>04</span>CASE ARCHIVE</div><h2>{t.casesTitle}</h2><p>{t.casesIntro}</p></div>
+      <div className="cases-head" data-reveal><div className="section-tag"><span>03</span>CASE ARCHIVE</div><h2>{t.casesTitle}</h2><p>{t.casesIntro}</p></div>
       <div className="archive-stickers" data-reveal aria-hidden="true"><span>PRINT ARCHIVE</span><span>24 / CONCEPT FILES</span><span>PROPOSED TECHNIQUE</span></div>
       <div className="filter-bar" role="toolbar" aria-label="Project categories">
         <div>{categories.map(item => <button aria-pressed={category === item} className={category === item ? "active" : ""} key={item} onClick={() => switchCategory(item)}>{item === "all" ? t.all : categoryLabels[item][lang]}</button>)}</div>

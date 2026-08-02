@@ -81,24 +81,33 @@ test("ships female lookbook hover states and a three-column rounded archive", as
   assert.match(css, /project-card:hover \.model-layer/);
 });
 
-test("ships 13 centered 16:9 garment base models on the specified background", async () => {
-  const [page, css, baseAssets] = await Promise.all([
+test("ships a theme-aware secondary page with 12 centered 16:9 garment bases", async () => {
+  const [home, bases, css, baseAssets] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/bases/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readdir(new URL("../public/models/garment-bases-v1/", import.meta.url)),
   ]);
   const pngs = baseAssets.filter(name => name.endsWith(".png"));
-  assert.equal(pngs.length, 13);
-  assert.match(page, /WOMENSWEAR BASES/);
-  assert.match(page, /garmentBases\.map/);
+  assert.equal(pngs.length, 12);
+  assert.match(home, /href="\/bases"/);
+  assert.doesNotMatch(home, /className="garment-library"/);
+  assert.match(bases, /WOMENSWEAR BASES/);
+  assert.match(bases, /garments\.map/);
+  assert.doesNotMatch(bases, /瑜伽服|YOGA WEAR|yoga-set/);
   assert.match(css, /aspect-ratio:16\/9/);
   assert.match(css, /object-position:50% 50%/);
-  assert.match(css, /background:#F5F0F0/);
+  assert.match(css, /--base-bg:#F5F0F0/);
+  assert.match(css, /--base-bg:#0d0d10/);
+  assert.match(css, /html\[data-theme="dark"\] \.garment-media img/);
   for (const name of pngs) {
     const file = await readFile(new URL(`../public/models/garment-bases-v1/${name}`, import.meta.url));
     assert.equal(file.readUInt32BE(16), 1672, `${name} width`);
     assert.equal(file.readUInt32BE(20), 941, `${name} height`);
   }
+  const response = await render("/bases");
+  assert.equal(response.status, 200);
+  assert.match(await response.text(), /女装基模库/);
 });
 
 test("expands cases from their card into split fixed-detail pages", async () => {
