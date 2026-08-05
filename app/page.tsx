@@ -624,26 +624,42 @@ export default function Home() {
         </div>
       </div>
       <div className="contact-credits" data-copied={copiedId ?? ""}>
-        {contacts.map((contact, i) => (
-          <button key={contact.id} type="button"
-            className={`hero-contact contact-btn${copiedId === contact.id ? " copied" : ""}`}
-            data-app={contact.id}
-            onClick={() => copyContact(contact)}
-            aria-label={`复制${contact.label}: ${contact.value}`}>
-            <span className="hero-contact-icon"><ContactIcon id={contact.id} /></span>
-<span className="hero-contact-text">
-<b>{copiedId === contact.id ? "已复制 ✓" : contact.value}</b>
-</span>
+        <div className="contact-credits-row">
+          <button type="button"
+            className={`hero-contact contact-btn${copiedId === "qq" ? " copied" : ""}`}
+            data-app="qq"
+            onClick={() => copyContact(contacts[0])}
+            aria-label={`复制${contacts[0].label}: ${contacts[0].value}`}>
+            <span className="hero-contact-icon"><ContactIcon id="qq" /></span>
+            <span className="hero-contact-text"><b>{copiedId === "qq" ? "已复制 ✓" : contacts[0].value}</b></span>
           </button>
-        ))}
-        <button type="button"
-          className={`hero-contact contact-btn${copiedId === "phone" ? " copied" : ""}`}
-          data-app="phone"
-          onClick={() => copyContact({ id: "phone", value: "17722850281" })}
-          aria-label="复制手机号: 17722850281">
-          <span className="hero-contact-icon"><ContactIcon id="phone" /></span>
-          <span className="hero-contact-text"><b>{copiedId === "phone" ? "已复制 ✓" : "17722850281"}</b></span>
-        </button>
+          <button type="button"
+            className={`hero-contact contact-btn${copiedId === "wechat" ? " copied" : ""}`}
+            data-app="wechat"
+            onClick={() => copyContact(contacts[1])}
+            aria-label={`复制${contacts[1].label}: ${contacts[1].value}`}>
+            <span className="hero-contact-icon"><ContactIcon id="wechat" /></span>
+            <span className="hero-contact-text"><b>{copiedId === "wechat" ? "已复制 ✓" : contacts[1].value}</b></span>
+          </button>
+        </div>
+        <div className="contact-credits-row">
+          <button type="button"
+            className={`hero-contact contact-btn${copiedId === "phone" ? " copied" : ""}`}
+            data-app="phone"
+            onClick={() => copyContact({ id: "phone", value: "17722850281" })}
+            aria-label="复制手机号: 17722850281">
+            <span className="hero-contact-icon"><ContactIcon id="phone" /></span>
+            <span className="hero-contact-text"><b>{copiedId === "phone" ? "已复制 ✓" : "17722850281"}</b></span>
+          </button>
+          <button type="button"
+            className={`hero-contact contact-btn${copiedId === "email" ? " copied" : ""}`}
+            data-app="email"
+            onClick={() => copyContact(contacts[2])}
+            aria-label={`复制${contacts[2].label}: ${contacts[2].value}`}>
+            <span className="hero-contact-icon"><ContactIcon id="email" /></span>
+            <span className="hero-contact-text"><b>{copiedId === "email" ? "已复制 ✓" : contacts[2].value}</b></span>
+          </button>
+        </div>
       </div>
       <footer><span>© 2026 {settings.displayName}</span><span>CONCEPT PORTFOLIO / {settings.city}</span><a href="/admin">CONTENT ADMIN ↗</a><a href="#top">BACK TO TOP ↑</a></footer>
       <button className={`back-to-top-btn${showTopBtn ? " is-visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="回到顶部"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg></button>
