@@ -362,10 +362,23 @@ export default function Home() {
   const switchCategory = (next: "all" | Category) => { setCategory(next); setVisible(12); };
   const goToSection = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); };
   const copyContact = (contact: { id: string; value: string }) => {
-    navigator.clipboard.writeText(contact.value).then(() => {
-      setCopiedId(contact.id);
-      window.setTimeout(() => setCopiedId(null), 2000);
-    }).catch(() => undefined);
+    setCopiedId(contact.id);
+    window.setTimeout(() => setCopiedId(null), 2000);
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(contact.value).catch(() => {
+        const ta = document.createElement("textarea");
+        ta.value = contact.value; ta.style.cssText = "position:fixed;opacity:0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+      });
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = contact.value; ta.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+    }
   };
   const switchTheme = () => {
     const next = theme === "light" ? "dark" : "light";

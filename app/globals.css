@@ -122,15 +122,21 @@ html[data-theme="dark"] .cal-grid span { color:var(--muted); }
 .hero-contacts:hover .hero-contact[data-app="email"]:hover { width:210px; box-shadow:0 8px 24px rgba(0,0,0,.14); }
 .hero-contacts:hover .hero-contact[data-app="email"]:hover .hero-contact-text { opacity:1; transform:translateX(0); }
 /* 复制成功状态 */
-.hero-contact.copied { background:var(--acid); width:210px; }
-.hero-contact.copied .hero-contact-text { opacity:1; transform:translateX(0); }
-.hero-contact.copied .hero-contact-text b { color:var(--ink); }
+.hero-contact.copied,
+.hero-contacts:hover .hero-contact.copied { background:var(--acid) !important; width:210px !important; box-shadow:0 0 0 2px var(--ink),0 8px 24px rgba(0,0,0,.18); }
+.hero-contact.copied .hero-contact-text,
+.hero-contacts:hover .hero-contact.copied .hero-contact-text { opacity:1 !important; transform:translateX(0) !important; }
+.hero-contact.copied .hero-contact-text b,
+.hero-contacts:hover .hero-contact.copied .hero-contact-text b { color:#111 !important; }
 /* 暗黑模式 */
 html[data-theme="dark"] .hero-contact { background:rgba(18,18,21,.9); border-color:var(--ink); box-shadow:0 4px 14px rgba(0,0,0,.3); }
 html[data-theme="dark"] .hero-contact-text small { color:var(--ink); }
 html[data-theme="dark"] .hero-contact-text b { color:var(--muted); }
 html[data-theme="dark"] .hero-contact:hover .hero-contact-text b,
 html[data-theme="dark"] .hero-contact.copied .hero-contact-text b { color:var(--ink); }
+html[data-theme="dark"] .hero-contact.copied,
+html[data-theme="dark"] .hero-contacts:hover .hero-contact.copied { background:var(--acid) !important; }
+html[data-theme="dark"] .hero-phone-bar.copied { background:var(--acid) !important; }
 /* === 手机号长条矩形 === */
 .hero-phone-bar {
   position:absolute; z-index:25; bottom:74px; left:6vw;
@@ -140,14 +146,15 @@ html[data-theme="dark"] .hero-contact.copied .hero-contact-text b { color:var(--
   transition:background .2s,box-shadow .2s,transform .2s; box-shadow:0 4px 14px rgba(0,0,0,.08);
 }
 .hero-phone-bar:hover { box-shadow:0 8px 24px rgba(0,0,0,.14); transform:translateY(-2px); }
-.hero-phone-bar.copied { background:var(--acid); }
+.hero-phone-bar.copied { background:var(--acid) !important; box-shadow:0 0 0 2px var(--ink),0 8px 24px rgba(0,0,0,.18); }
 .hero-phone-icon { flex-shrink:0; display:grid; place-items:center; width:28px; height:28px; color:var(--ink); }
 .hero-phone-icon svg { width:22px; height:22px; }
 .hero-phone-text { display:flex; flex-direction:column; gap:2px; }
 .hero-phone-text small { font:700 .44rem/1 var(--font-geist-mono); letter-spacing:.04em; color:var(--ink); }
 .hero-phone-text b { font:550 .72rem/1 var(--font-geist-mono); color:var(--muted); }
 .hero-phone-bar:hover .hero-phone-text b { color:var(--ink); }
-.hero-phone-bar.copied .hero-phone-text b { color:var(--ink); }
+.hero-phone-bar.copied .hero-phone-text b,
+.hero-phone-bar.copied .hero-phone-text small { color:#111 !important; }
 html[data-theme="dark"] .hero-phone-bar { background:rgba(18,18,21,.9); border-color:var(--ink); box-shadow:0 4px 14px rgba(0,0,0,.3); }
 .hero-visual { position:absolute; z-index:5; top:24vh; right:4vw; width:40vw; height:60vh; pointer-events:none; }
 .hero-boards { display:grid; width:100%; height:100%; grid-template-columns:repeat(6,1fr); grid-template-rows:0.75fr 1.25fr; gap:12px; pointer-events:auto; }
