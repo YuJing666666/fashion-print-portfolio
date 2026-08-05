@@ -1,0 +1,41 @@
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npx vinext build
+
+      - name: Inject D1 database ID
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'dist/server/wrangler.json';
+            const c = JSON.parse(fs.readFileSync(p, 'utf8'));
+            c.d1_databases[0].database_name = 'portfolio-db';
+            c.d1_databases[0].database_id = process.env.D1_DATABASE_ID;
+            fs.writeFileSync(p, JSON.stringify(c));
+          "
+        env:
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: dist/server
