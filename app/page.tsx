@@ -1,17 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AdminLink } from "./admin-link";
 import {
   categoryLabels,
   defaultManagedProjects,
   defaultSiteSettings,
+  modelCropStyle,
+  modelLookbooks,
+  modelPositions,
   type Category,
   type Lang,
   type ManagedProject,
   type PortfolioContent,
   type Project,
+  type SoftwareItem,
 } from "./projects";
 
 const copy = {
@@ -29,8 +33,8 @@ const copy = {
     profileBody: "以服装图案为核心，我同时处理平面系统、插画、配色与印花落地。工作从趋势与素材研究开始，经过草图、图形系统、上身比例测试和工艺建议，最终形成完整而可沟通的视觉方案。",
     serviceTitle: "服务范围",
     processTitle: "工作流程",
-    softwareTitle: "软件与执行能力",
-    softwareNote: "能力说明以常用工作任务呈现，不使用虚构百分比。",
+    softwareTitle: "软件掌握",
+    softwareNote: "12 件常用工具 · 覆盖矢量、三维与 AI 协同全流程 · 悬停暂停并放大查看",
     casesTitle: "24 个图案实验",
     casesIntro: "8 个深度主案例 + 16 个目录案例。所有图片为统一生成的概念展示，不代表真实客户或量产成果。",
     all: "全部",
@@ -41,6 +45,7 @@ const copy = {
     drawerLabel: "概念案例 / 建议生产方案",
     original: "图案原稿与过程",
     application: "上身效果与技术视图",
+    lookbook: "模特展示 / 三视图",
     technical: "服装三视图",
     front: "正面",
     side: "侧面",
@@ -73,8 +78,8 @@ const copy = {
     profileBody: "Fashion print is my core practice, supported by graphic systems, illustration, color and production thinking. Each project moves from research and sketching to graphic systems, on-body scale tests and a proposed technique.",
     serviceTitle: "SERVICES",
     processTitle: "PROCESS",
-    softwareTitle: "SOFTWARE & EXECUTION",
-    softwareNote: "Capabilities are described through real tasks—not invented proficiency percentages.",
+    softwareTitle: "SOFTWARE MASTERY",
+    softwareNote: "12 essential tools across vector, 3D and AI workflows · hover to pause and zoom",
     casesTitle: "24 PRINT EXPERIMENTS",
     casesIntro: "8 in-depth studies + 16 catalog cases. Every image is a unified concept presentation, not a real client or production claim.",
     all: "ALL",
@@ -85,6 +90,7 @@ const copy = {
     drawerLabel: "CONCEPT STUDY / PROPOSED PRODUCTION",
     original: "ARTWORK & PROCESS",
     application: "ON-BODY & TECHNICAL",
+    lookbook: "LOOKBOOK / THREE VIEW",
     technical: "GARMENT THREE-VIEW",
     front: "FRONT",
     side: "SIDE",
@@ -105,42 +111,72 @@ const copy = {
   },
 };
 
-const services = [
-  ["服装图案设计", "FASHION PRINT DESIGN"], ["定位印花与满版纹样", "PLACEMENT & REPEAT"],
-  ["平面视觉系统", "GRAPHIC SYSTEMS"], ["插画与角色", "ILLUSTRATION"], ["配色与印花方向", "COLOR & PRINT DIRECTION"],
-] as const;
-
-const workflow = [
-  ["01", "研究与采样", "RESEARCH & SAMPLING"], ["02", "概念与草图", "CONCEPT & SKETCH"],
-  ["03", "图形系统", "GRAPHIC SYSTEM"], ["04", "上身与三视图", "APPLICATION & FLATS"],
-  ["05", "工艺建议", "PRODUCTION PROPOSAL"],
+const contacts = [
+  { id: "qq", label: "QQ", value: "3176087576" },
+  { id: "wechat", label: "微信", value: "17722850281" },
+  { id: "email", label: "邮箱", value: "512338150@qq.com" },
 ] as const;
 
 const categories: ("all" | Category)[] = ["all", "placement", "allover", "graphic", "illustration", "identity"];
-const modelLookbooks = [
-  "/models/female-lookbook-01.png",
-  "/models/female-lookbook-02.png",
-  "/models/female-lookbook-03.png",
-] as const;
-const modelPositions = ["0%", "33.333%", "66.667%", "100%"] as const;
-
-function modelVisual(project: Project) {
-  const index = Math.max(0, Number(project.id) - 1);
-  return {
-    src: modelLookbooks[Math.floor(index / 4) % modelLookbooks.length],
-    position: modelPositions[index % modelPositions.length],
-  };
-}
-
-function modelCropStyle(project: Project) {
-  const visual = modelVisual(project);
-  return {
-    "--model-image": `url("${visual.src}")`,
-    "--model-x": visual.position,
-  } as React.CSSProperties;
-}
 
 type CaseOrigin = { top: number; right: number; bottom: number; left: number };
+
+const softwareLogos: Record<string, string> = {
+  illustrator: "/software-logos/ai-ai.png",
+  photoshop: "/software-logos/adobe-photoshop-photo-editor.png",
+  coreldraw: "/software-logos/CDR.png",
+  clo3d: "/software-logos/CLO-3D.png",
+  style3d: "/software-logos/styles 3D.jpg",
+  "garment-et": "/software-logos/ET.png",
+  workbuddy: "/software-logos/workbuddy-ai.png",
+  claudecode: "/software-logos/claude-by-anthropic.png",
+  codex: "/software-logos/codex-ai-remote-codex.png",
+  gemini: "/software-logos/google-gemini-enterprise.png",
+  catpawai: "/software-logos/meituan-catpaw.png",
+  trae: "/software-logos/trae.png",
+};
+
+function SoftwareCard({ tool, lang }: { tool: SoftwareItem; lang: Lang }) {
+  const tag = tool.category === "2d" ? "2D" : tool.category === "3d" ? "3D" : "AI";
+  const pct = Math.round(tool.mastery * 100);
+  const logo = softwareLogos[tool.id];
+  return (
+    <div className="sw-card" data-category={tool.category}>
+      <div className="sw-card-top">
+        <div className="sw-card-logo" data-cat={tool.category} data-sw={tool.id}>
+          {logo ? <img src={logo} alt={tool.name} /> : <span>{tool.code}</span>}
+        </div>
+        <span className="sw-card-tag" data-cat={tool.category}>{tag}</span>
+      </div>
+      <h4 className="sw-card-name">{tool.name}</h4>
+      <p className="sw-card-desc">{tool.description[lang]}</p>
+      <div className="sw-card-bar">
+        <div className="sw-card-track"><i style={{ width: `${pct}%` }} /></div>
+        <span className="sw-card-level">{pct}%</span>
+      </div>
+    </div>
+  );
+}
+
+function ContactIcon({ id }: { id: string }) {
+  if (id === "qq") return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2C7.6 2 4 5.6 4 10c0 1.8.6 3.4 1.6 4.7L5 18l3.3-1.5c1.1.5 2.4.8 3.7.8s2.6-.3 3.7-.8L19 18l-.6-3.3c1-1.3 1.6-2.9 1.6-4.7 0-4.4-3.6-8-8-8zm-2.5 6a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-2.5 4.5c1.2 0 2.3.4 2.8 1-.6.5-1.7.8-2.8.8s-2.2-.3-2.8-.8c.5-.6 1.6-1 2.8-1z" />
+    </svg>
+  );
+  if (id === "wechat") return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M9 3C5.1 3 2 5.7 2 9c0 1.7.9 3.2 2.2 4.2L3.5 16 6 14.8c.6.2 1.2.3 1.9.3-.1-.4-.2-.9-.2-1.3 0-3 2.7-5.5 6-5.5h.5C13.6 5 11.5 3 9 3zm-2.5 4a1 1 0 110 2 1 1 0 010-2zm5 0a1 1 0 110 2 1 1 0 010-2z" />
+      <path d="M22 13.5c0-2.5-2.5-4.5-5.5-4.5S11 11 11 13.5s2.5 4.5 5.5 4.5c.5 0 1-.1 1.5-.2L20.5 19l-.5-2c1.2-.7 2-2 2-3.5zm-7 .5a.7.7 0 110-1.4.7.7 0 010 1.4zm3 0a.7.7 0 110-1.4.7.7 0 010 1.4z" />
+    </svg>
+  );
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="M2 7l10 6.5L22 7" />
+    </svg>
+  );
+}
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>("zh");
@@ -151,6 +187,8 @@ export default function Home() {
   const [caseOrigin, setCaseOrigin] = useState<CaseOrigin | null>(null);
   const [settings, setSettings] = useState(defaultSiteSettings);
   const [portfolioProjects, setPortfolioProjects] = useState<ManagedProject[]>(defaultManagedProjects);
+  const [activeSection, setActiveSection] = useState("top");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -162,7 +200,7 @@ export default function Home() {
     const selected = settings.heroSlugs
       .map(slug => portfolioProjects.find(project => project.slug === slug))
       .filter((project): project is ManagedProject => Boolean(project));
-    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 3);
+    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 5);
   }, [portfolioProjects, settings.heroSlugs]);
 
   useEffect(() => {
@@ -171,7 +209,14 @@ export default function Home() {
       .then(response => response.ok ? response.json() : Promise.reject(new Error("content unavailable")))
       .then((content: PortfolioContent) => {
         if (!cancelled) {
-          setSettings(content.settings);
+          // 合并缺失的软件项：D1 可能用旧版 defaults 播种，缺少后新增的软件
+          const defaultMap = new Map(defaultSiteSettings.software.map(s => [s.id, s]));
+          const existingIds = new Set(content.settings.software.map(s => s.id));
+          const mergedSoftware = [
+            ...content.settings.software,
+            ...defaultSiteSettings.software.filter(s => !existingIds.has(s.id)),
+          ];
+          setSettings({ ...content.settings, software: mergedSoftware });
           setPortfolioProjects(content.projects);
         }
       })
@@ -216,6 +261,18 @@ export default function Home() {
     };
     window.addEventListener("mousemove", onMove);
     return () => { window.removeEventListener("mousemove", onMove); if (raf) window.cancelAnimationFrame(raf); };
+  }, []);
+
+  // 左侧刻度尺导航：scrollspy 记录当前所在 section
+  useEffect(() => {
+    const ids = ["top", "about", "skills", "cases", "contact"];
+    const sections = ids.map(id => document.getElementById(id)).filter((n): n is HTMLElement => Boolean(n));
+    if (!sections.length) return;
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) setActiveSection(e.target.id); });
+    }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+    sections.forEach(s => obs.observe(s));
+    return () => obs.disconnect();
   }, []);
 
   useEffect(() => {
@@ -281,6 +338,13 @@ export default function Home() {
   };
 
   const switchCategory = (next: "all" | Category) => { setCategory(next); setVisible(12); };
+  const goToSection = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const copyContact = (contact: { id: string; value: string }) => {
+    navigator.clipboard.writeText(contact.value).then(() => {
+      setCopiedId(contact.id);
+      window.setTimeout(() => setCopiedId(null), 2000);
+    }).catch(() => undefined);
+  };
   const switchTheme = () => {
     const next = theme === "light" ? "dark" : "light";
     setTheme(next);
@@ -288,21 +352,57 @@ export default function Home() {
     localStorage.setItem("portfolio-theme", next);
   };
 
+  const sectionIds = ["top", "about", "skills", "cases", "contact"];
+  const activeIndex = sectionIds.indexOf(activeSection);
+  const tickerRows = useMemo(() => {
+    const map = new Map(defaultSiteSettings.software.map(t => [t.id, t]));
+    const enabled = settings.software.filter(t => t.enabled).map(t => {
+      const d = map.get(t.id);
+      return {
+        ...t,
+        category: (t.category ?? d?.category ?? "ai") as SoftwareItem["category"],
+        mastery: typeof t.mastery === "number" ? t.mastery : (d?.mastery ?? 0.5),
+      };
+    });
+    const perRow = Math.max(1, Math.ceil(enabled.length / 3));
+    return [enabled.slice(0, perRow), enabled.slice(perRow, perRow * 2), enabled.slice(perRow * 2)];
+  }, [settings.software]);
+
   return <main
     className={settings.handwrittenSoftware ? "handwritten-on" : ""}
     style={{ "--acid": settings.accentColor, "--hero-weight": settings.heroWeight } as React.CSSProperties}
   >
     <header className="site-header">
       <a className="wordmark" href="#top"><b>{settings.displayName}.</b><span>FASHION PRINT DESIGNER</span></a>
-      <div className="page-switch" aria-label="Page switch"><Link className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</Link><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link><Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
-      <nav aria-label="Primary navigation">
-        {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id}>{t.nav[index]}</a>)}
+      <div className="page-switch" aria-label="Page switch"><AdminLink className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</AdminLink><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link><Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
+      <nav aria-label="Primary navigation" style={{display:'none'}}>
+        {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id} className={index === 4 ? "nav-crossed" : undefined}>{t.nav[index]}</a>)}
       </nav>
       <div className="header-actions">
         <button className="theme-toggle" onClick={switchTheme} aria-label={theme === "light" ? "开启黑夜模式" : "切换为白天模式"} aria-pressed={theme === "dark"}><i /><span>{theme === "light" ? "NIGHT" : "DAY"}</span></button>
         <button className="language" onClick={() => setLang(lang === "zh" ? "en" : "zh")} aria-label="Switch language">{lang === "zh" ? "EN" : "中文"}</button>
       </div>
     </header>
+
+    <nav className="side-nav" aria-label={lang === "zh" ? "区块导航" : "Section navigation"}>
+      <div className="side-nav-list">
+        {sectionIds.map((id, i) => {
+          const distance = Math.abs(i - activeIndex);
+          const weight = Math.max(0.1, 1 - distance * 0.28);
+          return (
+            <button key={id} type="button"
+              className={`side-nav-item${activeSection === id ? " active" : ""}`}
+              style={{ "--weight": weight } as React.CSSProperties}
+              onClick={() => goToSection(id)}
+              aria-label={t.nav[i]}
+              aria-current={activeSection === id ? "true" : undefined}>
+              <span className="nav-line" />
+              <span className="nav-title">{t.nav[i]}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
 
     <section className="hero" id="top" onPointerMove={event => {
       const rect = event.currentTarget.getBoundingClientRect();
@@ -312,35 +412,43 @@ export default function Home() {
       <div className="hero-grid" aria-hidden="true" />
       <div className="hero-copy">
         <p className="eyebrow"><i />{t.eyebrow}</p>
-        <h1 aria-label={`${t.heroA} ${t.heroB} ${t.heroC}`}><span>{t.heroA}</span><span className="outline">{t.heroB}</span><span>{t.heroC}</span></h1>
+        <h1 aria-label={`${t.heroA} ${t.heroB} ${t.heroC}`}><span>{t.heroA}</span><span>{t.heroB}</span><span>{t.heroC}</span></h1>
         <span className="hero-script" aria-hidden="true">made by hand — Y.N.</span>
         <div className="hero-bottom"><p>{settings.heroIntro[lang]}</p></div>
       </div>
       <div className="hero-visual" aria-label="Selected concept fashion cases">
-        {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
-          <div className="single-model" role="img" aria-label={`${project.title} single female model garment effect`} style={modelCropStyle(project)} />
-          <span>{project.id} / {project.title}</span>
-        </button>)}
-        <figure className="hero-3d-card">
-          <Image src="/models/hero-3d-garments-v1.png" alt="Three conceptual 3D womenswear garments for print visualization" fill sizes="(max-width: 760px) 38vw, 16vw" unoptimized />
-          <figcaption>3D GARMENT STUDY / CLO</figcaption>
-        </figure>
-        <div className="hero-color-card" aria-hidden="true"><small>COLOR SYSTEM / 01</small><div><i /><i /><i /><i /></div><b>#C8FF19<br />#1746D3<br />#F83F99</b></div>
+        <div className="hero-boards">
+          {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
+            <div className="single-model" role="img" aria-label={`${project.title} single female model garment effect`} style={modelCropStyle(project)} />
+            <span>{project.id} / {project.title}</span>
+          </button>)}
+        </div>
+        <div className="hero-color-card" aria-hidden="true"><small>COLOR SYSTEM / 01</small><div className="hero-color-swatches"><i /><i /><i /><i /></div><b>#C8FF19<br />#1746D3<br />#F83F99<br />#111111</b></div>
         <div className="hero-type-card" aria-hidden="true"><span>TYPE STUDY</span><b>PRINT<br />SIGNAL</b><em>03 / 24</em></div>
-        <div className="hero-label-stack" aria-hidden="true"><span>WOMENSWEAR</span><span>PLACEMENT PRINT</span><span>2026 / CONCEPT</span></div>
+        <div className="hero-tape" aria-hidden="true" />
+        <div className="hero-annotation" aria-hidden="true"><span>SAMPLE REF</span><b>SS26 — 01</b><em>↗ review</em></div>
+        <div className="hero-memo" aria-hidden="true"><span>MEMO</span><b>↳ check repeat<br />scale before<br />production</b><i /></div>
+        <div className="hero-calendar" aria-hidden="true"><b>15</b><small>FEB<br />2026</small><i /></div>
         <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
       </div>
 
-      {/* 服装设计标注：蚂蚁线 + 尺寸标识 */}
-      <div className="crosshair tl" aria-hidden="true" />
-      <div className="crosshair tr" aria-hidden="true" />
-      <div className="crosshair bl" aria-hidden="true" />
-      <div className="crosshair br" aria-hidden="true" />
-      <div className="dimension horiz" style={{ position:"absolute", top:"18vh", right:"2.8vw" }} aria-hidden="true"><span>380 × 480 MM</span></div>
-      <div className="dimension vert" style={{ position:"absolute", top:"calc(18vh + 60px)", right:"calc(2.8vw - 16px)" }} aria-hidden="true"><i /><i /></div>
-      <div className="grain-line" style={{ position:"absolute", bottom:"120px", right:"48vw" }} aria-hidden="true">GRAIN LINE</div>
-      <span className="tech-tag" style={{ position:"absolute", top:"78px", right:"2.8vw" }} aria-hidden="true">SS26 / CONCEPT</span>
       <a href="#cases" className="arrow-link hero-case-link">{t.enter}<b>↘</b></a>
+      <div className="hero-contacts" data-copied={copiedId ?? ""}>
+        {contacts.map((contact, i) => (
+          <button key={contact.id} type="button"
+            className={`hero-contact${copiedId === contact.id ? " copied" : ""}`}
+            data-app={contact.id}
+            style={{ "--idx": i } as React.CSSProperties}
+            onClick={() => copyContact(contact)}
+            aria-label={`复制${contact.label}: ${contact.value}`}>
+            <span className="hero-contact-icon"><ContactIcon id={contact.id} /></span>
+            <span className="hero-contact-text">
+              <small>{contact.label}</small>
+              <b>{copiedId === contact.id ? "已复制 ✓" : contact.value}</b>
+            </span>
+          </button>
+        ))}
+      </div>
       <div className="hero-foot"><span>{t.concept}</span><span>{t.scroll} ↓</span></div>
     </section>
 
@@ -356,21 +464,18 @@ export default function Home() {
     <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
 
     <section className="skills" id="skills">
-      <div className="skills-head" data-reveal><div className="section-tag"><span>02</span>CAPABILITY SYSTEM</div><h2>{t.softwareTitle}</h2><p>{t.softwareNote}</p><em className="hand-note">tools become visual language ↗</em></div>
+      <div className="skills-head" data-reveal><div className="section-tag"><span>02</span>CAPABILITY SYSTEM</div><h2><em className="hand-note">tools become visual language ↗</em>{t.softwareTitle}</h2><p>{t.softwareNote}</p></div>
       <div className="fashion-tags skill-fashion-tags" data-reveal aria-hidden="true"><span>COLOR SEPARATION / 04</span><span>REPEAT / 64 CM</span><span>CLO 3D FIT</span></div>
-      <div className="skills-body">
-        <div className="software-column" data-reveal>
-          <h3 className="column-title">{lang === "zh" ? "掌握软件" : "SOFTWARE"}</h3>
-          <div className="software-grid">
-            {settings.software.filter(tool => tool.enabled).map((tool, index) => <article className="software-card" data-reveal key={tool.id} style={{ "--delay": `${index * 45}ms` } as React.CSSProperties}>
-              <div className="tool-code">{tool.code}</div><div><span>CORE TOOL 0{index + 1}</span><h3>{tool.name}</h3><p>{tool.description[lang]}</p></div><i>↗</i>
-            </article>)}
+      <div className="software-ticker" data-reveal>
+        {tickerRows.map((row, i) => (
+          <div className="ticker-row" key={i} data-direction={i % 2 === 0 ? "left" : "right"}>
+            <div className="ticker-track">
+              {Array.from({ length: 6 }, () => row).flat().map((tool, j) => (
+                <SoftwareCard key={`${tool.id}-${j}`} tool={tool} lang={lang} />
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="services-column" data-reveal>
-          <div className="service-block"><h3 className="column-title">{t.serviceTitle}</h3>{services.map((service, index) => <div className="service-row" key={service[1]}><b>0{index + 1}</b><span>{lang === "zh" ? service[0] : service[1]}</span><i /></div>)}</div>
-          <div className="process-block"><h3 className="column-title">{t.processTitle}</h3>{workflow.map(item => <div className="process-row" key={item[0]}><b>{item[0]}</b><span>{lang === "zh" ? item[1] : item[2]}</span><em>→</em></div>)}</div>
-        </div>
+        ))}
       </div>
     </section>
 
@@ -418,6 +523,19 @@ export default function Home() {
           <div className="drawer-visuals">
             <div className="drawer-intro"><span>{active.id} / {active.year}</span><p>{t.drawerLabel}</p><h2 id="drawer-title">{active.title}</h2></div>
             <figure className="case-hero model-case-hero"><div className="single-model" role="img" aria-label={`${active.title} single female model garment effect`} style={modelCropStyle(active)} /><figcaption>{t.application} / 01</figcaption></figure>
+            <div className="visual-section">
+              <div className="visual-heading"><span>02</span><h3>{t.lookbook}</h3></div>
+              <div className="three-view">
+                {modelLookbooks.map((src, i) => <figure key={src}><div><div className="single-model" role="img" aria-label={`${active.title} model look ${i + 1}`} style={{ "--model-image": `url("${src}")`, "--model-x": modelPositions[i] } as React.CSSProperties} /></div><figcaption>LOOK 0{i + 1}</figcaption></figure>)}
+              </div>
+            </div>
+            <div className="visual-section">
+              <div className="visual-heading"><span>03</span><h3>{t.original}</h3></div>
+              <div className="artwork-grid">
+                <figure className="process-art"><div className="single-model" role="img" aria-label={`${active.title} detail view`} style={{ "--model-image": `url("${modelLookbooks[0]}")`, "--model-x": modelPositions[3] } as React.CSSProperties} /><figcaption>{t.application} / 02</figcaption></figure>
+                <div className="color-art" style={{ background: active.production.colors[0]?.hex ?? "#111" }}><span style={{ color: active.production.colors[1]?.hex ?? "#fff" }}>{active.title}</span>{active.production.colors.map(color => <b key={color.hex}>{color.hex}</b>)}</div>
+              </div>
+            </div>
             <div className="drawer-end"><span>END OF CASE {active.id}</span><i>✦</i></div>
           </div>
           <div className="drawer-specs">

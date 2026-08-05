@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { AdminLink } from "../admin-link";
 
 type Lang = "zh" | "en";
 
@@ -69,12 +70,6 @@ const entries: PromptEntry[] = [
   { id: "04", image: "/works/plastic-garden.png", prompt: "Surreal fashion print, plastic garden, synthetic flowers with chrome metallic surface, silver foil print effect, cream and chrome on white, center front placement, 310×380mm, concept portfolio --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 300", size: "1536 × 1024", colors: ["#C9CDD0", "#EDE6D7", "#F7F7F4"], tags: ["placement", "metallic", "chrome"] },
   { id: "05", image: "/works/tiny-panic.png", prompt: "Minimalist fashion graphic, tiny panic, small dense dots forming a screaming face, black on paper white, single color screen print, 300×340mm, white puff print on cobalt blue tee --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 150", size: "1536 × 1024", colors: ["#1648D7", "#F6F5F0", "#111111"], tags: ["graphic", "minimal", "puff"] },
   { id: "06", image: "/works/wear-the-noise.png", prompt: "Avant-garde fashion print, wear the noise, layered TV static and broadcast distortion patterns, reflective silver ink on black, center back print, 360×460mm, streetwear concept --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --chaos 25", size: "1536 × 1024", colors: ["#B8BDC1", "#0D0D0D", "#111111"], tags: ["identity", "reflective", "noise"] },
-  { id: "07", image: "/cases/streetwear-female.png", prompt: "Streetwear fashion photo, female model wearing oversized graphic tee, placement print, urban concrete background, natural light, full body shot, editorial style, SS26 collection --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 180", size: "1536 × 1024", colors: ["#F4F3EF", "#292B2C", "#C7FF18"], tags: ["lookbook", "female", "streetwear"] },
-  { id: "08", image: "/cases/hoodie-application.png", prompt: "Fashion product shot, hoodie with back placement print, velvet flock texture, black on deep black, tonal geometric form, studio lighting, 3/4 back view, CLO 3D render --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 220", size: "1536 × 1024", colors: ["#111111", "#050505", "#EDE8DC"], tags: ["application", "velvet", "tonal"] },
-  { id: "09", image: "/cases/print-collection.png", prompt: "Fashion print collection flat lay, multiple swatch cards arranged in grid, color separation examples, two-color screen print, acid lime and black, technical archive aesthetic, top-down view --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 190", size: "1536 × 1024", colors: ["#C7FF18", "#111111", "#F4F2ED"], tags: ["archive", "swatch", "screen"] },
-  { id: "10", image: "/cases/dark-portfolio-study.png", prompt: "Dark fashion portfolio study, moody lighting, model in black garment with subtle reflective print, low key studio, cinematic, film grain, editorial fashion photography --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 250 --chaos 10", size: "1536 × 1024", colors: ["#0D0D0D", "#B8BDC1", "#251B2C"], tags: ["editorial", "dark", "reflective"] },
-  { id: "11", image: "/cases/light-portfolio-study.png", prompt: "Light fashion portfolio study, bright daylight, model in white garment with pastel print, high key studio, clean minimal aesthetic, SS26 campaign style --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 180", size: "1536 × 1024", colors: ["#F7F7F4", "#E8DDC9", "#EEE7DA"], tags: ["editorial", "light", "minimal"] },
-  { id: "12", image: "/projects/electric-folk.jpg", prompt: "Fashion print design, electric folk, naive folk symbols redrawn as modular marks, cobalt blue vermilion and off white, water-based print with embroidery detail, 520×610mm, longsleeve body and cuffs --ar 3:2 --v 6", model: "Midjourney V6", params: "--ar 3:2 --v 6 --stylize 260", size: "1536 × 1024", colors: ["#1647D9", "#E44632", "#F0ECE0"], tags: ["allover", "folk", "embroidery"] },
 ];
 
 function isLight(hex: string): boolean {
@@ -143,9 +138,9 @@ export default function PromptLibraryPage() {
   return <main className="bases-page prompts-page">
     <header className="site-header bases-header">
       <Link className="wordmark" href="/#top"><b>YOUR NAME.</b><span>FASHION PRINT DESIGNER</span></Link>
-      <div className="page-switch" aria-label="Page switch">
-        <Link href="/">{t.portfolio}</Link>
-        <Link href="/bases">{t.bases}</Link>
+<div className="page-switch" aria-label="Page switch">
+<AdminLink href="/">{t.portfolio}</AdminLink>
+<Link href="/bases">{t.bases}</Link>
         <Link className="active" href="/prompts">{t.prompts}</Link>
         <Link href="/colors">{t.colors}</Link>
       </div>

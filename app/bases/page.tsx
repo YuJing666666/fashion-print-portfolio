@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { AdminLink } from "../admin-link";
 import { defaultSiteSettings, type Lang, type PortfolioContent } from "../projects";
 
 const garments = [
@@ -81,7 +82,7 @@ export default function GarmentBasesPage() {
   return <main className="bases-page">
     <header className="site-header bases-header">
       <Link className="wordmark" href="/#top"><b>{displayName}.</b><span>FASHION PRINT DESIGNER</span></Link>
-      <div className="page-switch" aria-label="Page switch"><Link href="/">{t.portfolio}</Link><Link className="active" href="/bases">{t.bases}</Link><Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
+      <div className="page-switch" aria-label="Page switch"><AdminLink href="/">{t.portfolio}</AdminLink><Link className="active" href="/bases">{t.bases}</Link><Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
       <div className="header-actions">
         <button className="theme-toggle" onClick={switchTheme} aria-label={theme === "light" ? t.themeLight : t.themeDark} aria-pressed={theme === "dark"}><i /><span>{theme === "light" ? "NIGHT" : "DAY"}</span></button>
         <button className="language" onClick={() => setLang(lang === "zh" ? "en" : "zh")} aria-label="Switch language">{lang === "zh" ? "EN" : "中文"}</button>

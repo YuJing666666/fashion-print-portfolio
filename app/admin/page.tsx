@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   defaultManagedProjects,
   defaultSiteSettings,
+  modelCropStyle,
   type Category,
   type Lang,
   type ManagedProject,
@@ -219,12 +219,12 @@ export default function AdminPage() {
           <div className="project-list">
             <div className="project-list-head"><span>24 CASES</span><b>排序 / 展示 / 精选</b></div>
             {orderedProjects.map((project, index) => <article className={selected.slug === project.slug ? "selected" : ""} key={project.slug}>
-              <button className="project-select" onClick={() => setSelectedSlug(project.slug)}><span>{String(index + 1).padStart(2, "0")}</span><Image src={project.assets.cover} alt="" width={58} height={46} unoptimized /><b>{project.title}<small>{project.category} / {project.year}</small></b></button>
+              <button className="project-select" onClick={() => setSelectedSlug(project.slug)}><span>{String(index + 1).padStart(2, "0")}</span><div className="admin-thumb"><div className="single-model" style={modelCropStyle(project)} /></div><b>{project.title}<small>{project.category} / {project.year}</small></b></button>
               <div className="project-controls"><button aria-label="上移" onClick={() => moveProject(project.slug, -1)}>↑</button><button aria-label="下移" onClick={() => moveProject(project.slug, 1)}>↓</button><label title="公开展示"><input type="checkbox" checked={project.visible} onChange={event => updateProject(project.slug, item => ({ ...item, visible: event.target.checked, hero: event.target.checked ? item.hero : false }))} />ON</label><label title="首屏精选"><input type="checkbox" checked={project.hero} onChange={() => toggleHero(project)} />HERO</label></div>
             </article>)}
           </div>
           <div className="project-editor">
-            <div className="project-editor-head"><div><span>{selected.id} / CASE DETAIL</span><h2>{selected.title}</h2></div><div className="cover-mini"><Image src={selected.assets.cover} alt={`${selected.title} preview`} fill sizes="180px" unoptimized /></div></div>
+            <div className="project-editor-head"><div><span>{selected.id} / CASE DETAIL</span><h2>{selected.title}</h2></div><div className="cover-mini"><div className="single-model" style={modelCropStyle(selected)} /></div></div>
             <div className="field-grid two">
               <label><span>项目标题</span><input value={selected.title} onChange={event => updateProject(selected.slug, item => ({ ...item, title: event.target.value }))} /></label>
               <label><span>年份</span><input value={selected.year} onChange={event => updateProject(selected.slug, item => ({ ...item, year: event.target.value }))} /></label>

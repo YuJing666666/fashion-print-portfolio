@@ -111,6 +111,7 @@
 .project-select { display:grid; min-width:0; grid-template-columns:25px 58px 1fr; align-items:center; gap:9px; padding:8px; border:0; background:transparent; cursor:pointer; text-align:left; }
 .project-select>span { color:#777; font:550 .46rem/1 var(--font-geist-mono); }
 .project-select img { object-fit:cover; }
+.admin-thumb { position:relative; width:58px; height:46px; overflow:hidden; border-radius:4px; background:#e6e6e1; }
 .project-select>b { overflow:hidden; font-size:.7rem; text-overflow:ellipsis; white-space:nowrap; }
 .project-select small { display:block; margin-top:4px; color:#777; font:500 .42rem/1 var(--font-geist-mono); }
 .project-controls { display:flex; align-items:center; gap:3px; padding-right:8px; }

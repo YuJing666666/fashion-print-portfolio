@@ -50,9 +50,12 @@ async function ensureSeeded(db: D1Database) {
       .bind("site", JSON.stringify(defaultSiteSettings)).run();
   }
 
-  const count = await db.prepare("SELECT COUNT(*) AS total FROM portfolio_projects").first<{ total: number }>();
-  if (!count?.total) {
-    await db.batch(defaultManagedProjects.map(project => db.prepare(
+  // 同步缺失的默认项目：D1 可能用旧版 defaults 播种，需要补入新增项目
+  const existing = await db.prepare("SELECT slug FROM portfolio_projects").all<{ slug: string }>();
+  const existingSet = new Set(existing.results.map(r => r.slug));
+  const missing = defaultManagedProjects.filter(p => !existingSet.has(p.slug));
+  if (missing.length > 0) {
+    await db.batch(missing.map(project => db.prepare(
       "INSERT INTO portfolio_projects (slug, data, display_order, visible, hero) VALUES (?, ?, ?, ?, ?)",
     ).bind(project.slug, JSON.stringify(project), project.order, project.visible ? 1 : 0, project.hero ? 1 : 0)));
   }

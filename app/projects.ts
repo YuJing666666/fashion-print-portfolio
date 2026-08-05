@@ -27,6 +27,8 @@ export type SoftwareItem = {
   name: string;
   description: Localized;
   enabled: boolean;
+  category: "2d" | "3d" | "ai";
+  mastery: number;
 };
 
 export type SiteSettings = {
@@ -130,16 +132,22 @@ export const defaultSiteSettings: SiteSettings = {
   handwrittenSoftware: false,
   heroSlugs: ["static-garden", "signal-burn", "electric-folk"],
   software: [
-    { id: "illustrator", code: "Ai", name: "Adobe Illustrator", description: zhEn("矢量图形、技术三视图与连续纹样", "VECTOR GRAPHICS, TECH FLATS & REPEATS"), enabled: true },
-    { id: "photoshop", code: "Ps", name: "Adobe Photoshop", description: zhEn("图像合成、上身效果与色彩分离", "COMPOSITING, MOCKUPS & COLOR SEPARATION"), enabled: true },
-    { id: "clo3d", code: "CLO", name: "CLO 3D", description: zhEn("服装版型、面料垂感与三维试衣", "PATTERN, FABRIC DRAPE & 3D FITTING"), enabled: true },
-    { id: "style3d", code: "S3D", name: "Style3D", description: zhEn("数字样衣、材质预览与动态展示", "DIGITAL SAMPLES, MATERIALS & MOTION"), enabled: true },
-    { id: "codex", code: "CDX", name: "Codex", description: zhEn("AI 编程辅助 — 自动化与脚本生成", "AI PAIR PROGRAMMING & SCRIPTING"), enabled: true },
-    { id: "gemini", code: "GEM", name: "Gemini", description: zhEn("AI 图像理解与多模态研究", "AI IMAGE UNDERSTANDING & RESEARCH"), enabled: true },
-    { id: "claudecode", code: "CC", name: "Claude Code", description: zhEn("AI 代码助手 — 工具链与工作流", "AI CODE ASSISTANT — TOOLING & WORKFLOW"), enabled: true },
-    { id: "workbuddy", code: "WB", name: "WorkBuddy", description: zhEn("AI 智能体 — 协同设计与内容生产", "AI AGENT — COLLABORATIVE DESIGN & CONTENT"), enabled: true },
-    { id: "trae", code: "TRE", name: "TRAE", description: zhEn("AI 原型与界面快速搭建", "AI PROTOTYPING & UI"), enabled: true },
-    { id: "catpawai", code: "CPW", name: "CatPawAI", description: zhEn("AI 视觉生成 — 概念图与素材探索", "AI VISUAL GENERATION — CONCEPT & ASSETS"), enabled: true },
+    // 2D 矢量与图像
+    { id: "illustrator", code: "Ai", name: "Adobe Illustrator", description: zhEn("矢量图形、技术三视图与连续纹样", "VECTOR GRAPHICS, TECH FLATS & REPEATS"), enabled: true, category: "2d", mastery: 0.95 },
+    { id: "photoshop", code: "Ps", name: "Adobe Photoshop", description: zhEn("图像合成、上身效果与色彩分离", "COMPOSITING, MOCKUPS & COLOR SEPARATION"), enabled: true, category: "2d", mastery: 0.82 },
+    { id: "coreldraw", code: "CDR", name: "CorelDRAW", description: zhEn("矢量排版、印花分色与制版输出", "VECTOR LAYOUT, COLOR SEPARATION & PRODUCTION"), enabled: true, category: "2d", mastery: 0.62 },
+    // 3D 服装建模
+    { id: "clo3d", code: "CLO", name: "CLO 3D", description: zhEn("服装版型、面料垂感与三维试衣", "PATTERN, FABRIC DRAPE & 3D FITTING"), enabled: true, category: "3d", mastery: 0.78 },
+    { id: "style3d", code: "S3D", name: "Style3D", description: zhEn("数字样衣、材质预览与动态展示", "DIGITAL SAMPLES, MATERIALS & MOTION"), enabled: true, category: "3d", mastery: 0.66 },
+    { id: "garment-et", code: "ET", name: "服装 ET", description: zhEn("数字化样板、推档放码与排料", "DIGITAL PATTERN, GRADING & MARKER"), enabled: true, category: "3d", mastery: 0.56 },
+    // AI 主工具（高熟练度，整块展示）
+    { id: "workbuddy", code: "WB", name: "WorkBuddy", description: zhEn("AI 智能体 — 协同设计与内容生产", "AI AGENT — COLLABORATIVE DESIGN & CONTENT"), enabled: true, category: "ai", mastery: 0.85 },
+    { id: "claudecode", code: "CC", name: "Claude Code", description: zhEn("AI 代码助手 — 工具链与工作流", "AI CODE ASSISTANT — TOOLING & WORKFLOW"), enabled: true, category: "ai", mastery: 0.80 },
+    // AI 辅助（低熟练度，小方块展示）
+    { id: "codex", code: "CDX", name: "Codex", description: zhEn("AI 编程辅助 — 自动化与脚本生成", "AI PAIR PROGRAMMING & SCRIPTING"), enabled: true, category: "ai", mastery: 0.32 },
+    { id: "gemini", code: "GEM", name: "Gemini", description: zhEn("AI 图像理解与多模态研究", "AI IMAGE UNDERSTANDING & RESEARCH"), enabled: true, category: "ai", mastery: 0.28 },
+    { id: "catpawai", code: "CPW", name: "CatPawAI", description: zhEn("AI 视觉生成 — 概念图与素材探索", "AI VISUAL GENERATION — CONCEPT & ASSETS"), enabled: true, category: "ai", mastery: 0.25 },
+    { id: "trae", code: "TRE", name: "TRAE", description: zhEn("AI 原型与界面快速搭建", "AI PROTOTYPING & UI"), enabled: true, category: "ai", mastery: 0.22 },
   ],
 };
 
@@ -149,3 +157,176 @@ export const defaultManagedProjects: ManagedProject[] = projects.map((project, i
   order: index + 1,
   hero: defaultSiteSettings.heroSlugs.includes(project.slug),
 }));
+
+// === 模特 lookbook 系统：首页与后台共享 ===
+export const modelLookbooks = [
+  "/models/female-lookbook-01.png",
+  "/models/female-lookbook-02.png",
+  "/models/female-lookbook-03.png",
+] as const;
+
+export const modelPositions = ["0%", "33.333%", "66.667%", "100%"] as const;
+
+export function modelVisual(project: { id: string }) {
+  const index = Math.max(0, Number(project.id) - 1);
+  return {
+    src: modelLookbooks[Math.floor(index / 4) % modelLookbooks.length],
+    position: modelPositions[index % modelPositions.length],
+  };
+}
+
+export function modelCropStyle(project: { id: string }): Record<string, string> {
+  const visual = modelVisual(project);
+  return {
+    "--model-image": `url("${visual.src}")`,
+    "--model-x": visual.position,
+  };
+}
+
+// === 软件工作流数据：右侧工作流程面板使用 ===
+export type WorkflowStep = { title: Localized; detail: Localized };
+export type WorkflowGroup = {
+  title: Localized;
+  steps: WorkflowStep[];
+};
+
+const wf = (tZh: string, tEn: string, dZh: string, dEn: string): WorkflowStep => ({
+  title: zhEn(tZh, tEn),
+  detail: zhEn(dZh, dEn),
+});
+
+export const softwareWorkflows: Record<string, WorkflowGroup> = {
+  default: {
+    title: zhEn("工作流程", "PROCESS"),
+    steps: [
+      wf("研究与调研", "RESEARCH", "趋势、面料、廓形与色彩方向调研", "TREND, FABRIC, SILHOUETTE & COLOR RESEARCH"),
+      wf("概念与草图", "CONCEPT", "快速手稿、构图与图形方向实验", "RAPID SKETCHES, COMPOSITION & GRAPHIC EXPLORATION"),
+      wf("图形系统", "GRAPHIC SYSTEM", "主图案、连续纹样与配色规范", "MAIN MOTIF, REPEAT PATTERN & COLOR SYSTEM"),
+      wf("上身与三视图", "MOCK-UP & FLATS", "上身效果、技术三视图与版型示意", "MOCK-UPS, TECH FLATS & CONSTRUCTION NOTES"),
+      wf("工艺建议", "PRODUCTION", "印花工艺、分色文件与生产规格", "PRINT TECHNIQUE, SEPARATION & SPEC SHEETS"),
+    ],
+  },
+  illustrator: {
+    title: zhEn("Illustrator · 工作流", "ILLUSTRATOR · WORKFLOW"),
+    steps: [
+      wf("矢量线稿", "VECTOR SKETCH", "钢笔工具绘制精确路径，锚点控制曲线", "PEN TOOL PRECISE PATHS, ANCHOR CONTROL"),
+      wf("路径编辑", "PATH EDIT", "锚点增删、布尔运算与图形组合", "ANCHOR OPS, BOOLEAN & COMPOUND SHAPES"),
+      wf("色块分色", "COLOR SEPARATION", "专色分版、色值规范与色板系统", "SPOT COLOR SEPARATION & SWATCH SYSTEM"),
+      wf("连续纹样", "REPEAT PATTERN", "四方连续、定位印花与满版排列", "TILE, PLACEMENT & ALL-OVER LAYOUT"),
+      wf("文件输出", "EXPORT", "制版 PDF、AI 分色文件与字体打包", "PRINT PDF, AI SEPARATION & FONT OUTLINE"),
+    ],
+  },
+  photoshop: {
+    title: zhEn("Photoshop · 工作流", "PHOTOSHOP · WORKFLOW"),
+    steps: [
+      wf("图像合成", "COMPOSITING", "图层混合、蒙版与智能对象", "LAYER BLEND, MASKS & SMART OBJECTS"),
+      wf("上身效果", "MOCK-UP", "模特上身、印花贴合与场景合成", "MODEL MOCK-UP, PRINT MAPPING & SCENE"),
+      wf("色彩调整", "COLOR ADJUST", "曲线、色阶与色调分离", "CURVES, LEVELS & TONE SEPARATION"),
+      wf("滤镜渲染", "FILTER & RENDER", "Camera Raw 滤镜与质感叠加", "CAMERA RAW FILTERS & TEXTURE OVERLAY"),
+      wf("分层输出", "EXPORT", "分图层 PSD、JPG 套图与色彩管理", "LAYERED PSD, JPG SUITE & COLOR MANAGEMENT"),
+    ],
+  },
+  coreldraw: {
+    title: zhEn("CorelDRAW · 工作流", "CORELDRAW · WORKFLOW"),
+    steps: [
+      wf("矢量排版", "VECTOR LAYOUT", "精确排版、版式与拼版", "PRECISE LAYOUT, COMPOSITION & IMPOSITION"),
+      wf("印花分色", "SEPARATION", "专色分版与色值管理", "SPOT COLOR SEPARATION & MANAGEMENT"),
+      wf("连续纹样", "REPEAT PATTERN", "四方连续、定位印花与满版排列", "TILE, PLACEMENT & ALL-OVER LAYOUT"),
+      wf("制版输出", "PREPRESS", "印前检查、陷印与出血", "PREFLIGHT, TRAPPING & BLEED"),
+      wf("工艺文件", "PRODUCTION FILE", "工艺单、刀模与拼版图", "SPEC SHEETS, DIES & IMPOSITION"),
+    ],
+  },
+  clo3d: {
+    title: zhEn("CLO 3D · 工作流", "CLO 3D · WORKFLOW"),
+    steps: [
+      wf("版型搭建", "PATTERN DRAFT", "2D 版片绘制、缝份与放码", "2D PATTERNS, SEAM & GRADING"),
+      wf("面料仿真", "FABRIC SIM", "物理面料参数与垂感测试", "PHYSICAL FABRIC PARAMS & DRAPE TEST"),
+      wf("虚拟试衣", "VIRTUAL FITTING", "缝合、穿着与动态测试", "SEWING, FITTING & DYNAMIC TEST"),
+      wf("渲染输出", "RENDER", "材质、光照与最终渲染图", "MATERIAL, LIGHTING & FINAL RENDER"),
+      wf("工艺同步", "PRODUCTION SYNC", "2D 版片导出与生产对接", "2D PATTERN EXPORT & HANDOFF"),
+    ],
+  },
+  style3d: {
+    title: zhEn("Style3D · 工作流", "STYLE3D · WORKFLOW"),
+    steps: [
+      wf("数字样衣", "DIGITAL SAMPLE", "快速建模与样衣生成", "RAPID MODELING & SAMPLE GENERATION"),
+      wf("材质预览", "MATERIAL PREVIEW", "面料、印花与质感渲染", "FABRIC, PRINT & TEXTURE RENDER"),
+      wf("动态展示", "MOTION", "走秀、动态与互动展示", "CATWALK, MOTION & INTERACTIVE DISPLAY"),
+      wf("渲染输出", "RENDER", "多角度高清渲染图", "MULTI-ANGLE HIGH-RES RENDER"),
+    ],
+  },
+  "garment-et": {
+    title: zhEn("服装 ET · 工作流", "GARMENT ET · WORKFLOW"),
+    steps: [
+      wf("样板设计", "PATTERN DESIGN", "数字化样板与放码", "DIGITAL PATTERNS & GRADING"),
+      wf("号型系列", "SIZE SET", "号型建立与系列化", "SIZE SETUP & SERIALIZATION"),
+      wf("推档放码", "GRADING", "号型推档与规格表", "SIZE GRADING & SPEC TABLES"),
+      wf("排料", "MARKER", "用料排料与成本计算", "MARKER LAYOUT & COST CALCULATION"),
+      wf("工艺文件", "PRODUCTION FILE", "工艺单与生产对接", "TECH SHEETS & PRODUCTION HANDOFF"),
+    ],
+  },
+  workbuddy: {
+    title: zhEn("WorkBuddy · 工作流", "WORKBUDDY · WORKFLOW"),
+    steps: [
+      wf("协同设计", "CO-DESIGN", "AI 智能体辅助设计与迭代", "AI AGENT FOR CO-DESIGN & ITERATION"),
+      wf("内容生成", "CONTENT", "自动生成文案、图稿与方案", "AUTO-GENERATED COPY, ART & PROPOSALS"),
+      wf("工具链", "TOOLING", "设计脚本与自动化工作流", "DESIGN SCRIPTS & AUTOMATION"),
+      wf("多智能体", "MULTI-AGENT", "多智能体协作完成复杂任务", "MULTI-AGENT COLLABORATION"),
+      wf("项目交付", "DELIVERY", "方案整理、文件归档与交付确认", "ASSET ORGANIZATION & DELIVERY CONFIRMATION"),
+    ],
+  },
+  claudecode: {
+    title: zhEn("Claude Code · 工作流", "CLAUDE CODE · WORKFLOW"),
+    steps: [
+      wf("需求分析", "ANALYSIS", "理解设计需求，拆解任务与技术方案", "PARSE DESIGN BRIEF, DECOMPOSE TASKS & TECH PLAN"),
+      wf("代码生成", "CODE GEN", "AI 代码生成与脚手架", "AI CODE GEN & SCAFFOLDING"),
+      wf("重构调试", "REFACTOR", "代码重构、Bug 排查与优化", "REFACTOR, DEBUG & OPTIMIZE"),
+      wf("工具链", "TOOLING", "设计工具集成与自动化", "DESIGN TOOLING & AUTOMATION"),
+      wf("部署交付", "DEPLOY", "构建发布与线上验证", "BUILD, RELEASE & VERIFY"),
+    ],
+  },
+  codex: {
+    title: zhEn("Codex · 工作流", "CODEX · WORKFLOW"),
+    steps: [
+      wf("代码生成", "CODE GEN", "AI 代码生成与脚本编写", "AI CODE GENERATION & SCRIPTING"),
+      wf("自动化", "AUTOMATION", "批量处理与自动化辅助任务", "BATCH PROCESSING & AUTOMATION ASSIST"),
+      wf("测试验证", "TESTING", "生成测试用例与验证逻辑", "TEST CASE GENERATION & LOGIC VERIFICATION"),
+      wf("文档生成", "DOCS", "自动生成注释与技术文档", "AUTO-GENERATED COMMENTS & TECH DOCS"),
+    ],
+  },
+  gemini: {
+    title: zhEn("Gemini · 工作流", "GEMINI · WORKFLOW"),
+    steps: [
+      wf("图像理解", "IMAGE UNDERSTANDING", "图像理解与视觉分析", "IMAGE UNDERSTANDING & VISUAL ANALYSIS"),
+      wf("多模态研究", "MULTIMODAL RESEARCH", "图文交叉检索与趋势调研", "CROSS-MODAL SEARCH & TREND RESEARCH"),
+      wf("文案生成", "COPY GEN", "生成产品文案与双语描述", "PRODUCT COPY & BILINGUAL DESCRIPTION"),
+      wf("知识问答", "KNOWLEDGE Q&A", "面料工艺与行业知识查询", "FABRIC, CRAFT & INDUSTRY KNOWLEDGE"),
+    ],
+  },
+  trae: {
+    title: zhEn("TRAE · 工作流", "TRAE · WORKFLOW"),
+    steps: [
+      wf("原型搭建", "PROTOTYPE", "AI 驱动快速原型与界面生成", "AI-DRIVEN RAPID PROTOTYPING & UI GEN"),
+      wf("组件生成", "COMPONENT GEN", "自动生成页面组件与布局", "AUTO-GENERATED PAGES, COMPONENTS & LAYOUT"),
+      wf("交互设计", "INTERACTION", "交互逻辑与动效辅助定义", "INTERACTION LOGIC & MOTION ASSIST"),
+      wf("快速迭代", "ITERATION", "实时预览与快速调整发布", "LIVE PREVIEW & FAST ITERATE-DEPLOY"),
+    ],
+  },
+  catpawai: {
+    title: zhEn("CatPawAI · 工作流", "CATPAWAI · WORKFLOW"),
+    steps: [
+      wf("概念生成", "CONCEPT GEN", "AI 视觉生成服装图案概念图", "AI VISUAL GEN FOR PRINT CONCEPT ART"),
+      wf("素材探索", "ASSET EXPLORATION", "快速迭代图案方向与风格变体", "RAPID ITERATION ON MOTIF & STYLE VARIANTS"),
+      wf("风格迁移", "STYLE TRANSFER", "将参考风格应用到图案设计", "APPLY REFERENCE STYLE TO PRINT DESIGN"),
+      wf("配色方案", "COLOR SCHEME", "自动生成配色组合与变体", "AUTO-GENERATED COLOR COMBOS & VARIANTS"),
+    ],
+  },
+};
+
+export const defaultServiceScope: Localized[] = [
+  zhEn("服装图案设计", "GARMENT PATTERN"),
+  zhEn("定位印花与满版纹样", "PLACEMENT & ALL-OVER PRINT"),
+  zhEn("平面视觉系统", "GRAPHIC SYSTEM"),
+  zhEn("插画与角色", "ILLUSTRATION & CHARACTER"),
+  zhEn("配色与印花方向", "COLOR & DIRECTION"),
+];

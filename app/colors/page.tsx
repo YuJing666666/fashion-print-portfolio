@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { AdminLink } from "../admin-link";
 import { defaultManagedProjects, defaultSiteSettings, type Lang, type PortfolioContent } from "../projects";
 
 const copy = {
@@ -54,7 +55,8 @@ type ColorEntry = {
   pairs: { hex: string; zh: string; en: string; count: number }[];
 };
 
-type PaletteSlot = { hex: string; zh: string; en: string };
+type PaletteSlot = { hex: string; zh: string; en: string; ratio: number };
+type PaletteSet = { id: string; name: { zh: string; en: string }; slots: PaletteSlot[] };
 
 const families = [
   { id: "black", zh: "黑 / 深", en: "BLACK / DARK" },
@@ -93,6 +95,13 @@ function isLight(hex: string): boolean {
   return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
+function invertHex(hex: string): string {
+  const r = 255 - parseInt(hex.slice(1, 3), 16);
+  const g = 255 - parseInt(hex.slice(3, 5), 16);
+  const b = 255 - parseInt(hex.slice(5, 7), 16);
+  return "#" + [r, g, b].map(v => v.toString(16).padStart(2, "0")).join("");
+}
+
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -108,22 +117,69 @@ export default function ColorLibraryPage() {
   const [displayName, setDisplayName] = useState(defaultSiteSettings.displayName);
   const [colors, setColors] = useState<ColorEntry[]>([]);
   const [totalEntries, setTotalEntries] = useState(0);
-  const [palette, setPalette] = useState<PaletteSlot[]>([]);
+  const [palettes, setPalettes] = useState<PaletteSet[]>([]);
   const [copied, setCopied] = useState(false);
   const t = copy[lang];
 
-  const generatePalette = useCallback((entry: ColorEntry) => {
-    // 从搭配中随机取 3 个，加上主色，组成 4 色方案
+  const generatePalettes = useCallback((entry: ColorEntry) => {
     const shuffled = shuffle(entry.pairs);
-    const picks: PaletteSlot[] = [{ hex: entry.hex, zh: entry.zh, en: entry.en }];
-    for (const p of shuffled) {
-      if (picks.length >= 4) break;
-      picks.push({ hex: p.hex, zh: p.zh, en: p.en });
-    }
-    setPalette(picks);
+    const companions = shuffled.slice(0, 3).map(p => ({ hex: p.hex, zh: p.zh, en: p.en }));
+    // 不足 3 个搭配色时用中性色补齐
+    const neutrals = [
+      { hex: "#FFFFFF", zh: "白", en: "White" },
+      { hex: "#1A1A1A", zh: "黑", en: "Black" },
+      { hex: "#888888", zh: "灰", en: "Grey" },
+    ];
+    let ni = 0;
+    while (companions.length < 3) companions.push(neutrals[ni++ % neutrals.length]);
+
+    const main = { hex: entry.hex, zh: entry.zh, en: entry.en };
+    const sets: PaletteSet[] = [
+      {
+        id: "dominant",
+        name: { zh: "主色主导", en: "DOMINANT" },
+        slots: [
+          { ...main, ratio: 55 },
+          { ...companions[0], ratio: 25 },
+          { ...companions[1], ratio: 12 },
+          { ...companions[2], ratio: 8 },
+        ],
+      },
+      {
+        id: "balanced",
+        name: { zh: "均衡搭配", en: "BALANCED" },
+        slots: [
+          { ...companions[0], ratio: 35 },
+          { ...main, ratio: 30 },
+          { ...companions[1], ratio: 20 },
+          { ...companions[2], ratio: 15 },
+        ],
+      },
+      {
+        id: "accent",
+        name: { zh: "点缀强调", en: "ACCENT" },
+        slots: [
+          { ...companions[1], ratio: 45 },
+          { ...companions[0], ratio: 30 },
+          { ...companions[2], ratio: 15 },
+          { ...main, ratio: 10 },
+        ],
+      },
+      {
+        id: "inverse",
+        name: { zh: "反色对比", en: "INVERSE" },
+        slots: [
+          { ...main, ratio: 38 },
+          { hex: invertHex(main.hex), zh: `${main.zh}反色`, en: `${main.en} Inverse`, ratio: 34 },
+          { ...companions[0], ratio: 16 },
+          { ...companions[1], ratio: 12 },
+        ],
+      },
+    ];
+
+    setPalettes(sets);
     setCopied(false);
-    // 复制到剪贴板
-    const hexStr = picks.map(p => p.hex).join(" · ");
+    const hexStr = sets[0].slots.map(s => s.hex).join(" · ");
     navigator.clipboard?.writeText(hexStr).then(() => {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
@@ -136,7 +192,7 @@ export default function ColorLibraryPage() {
     const currentTheme = document.documentElement.dataset.theme;
     window.requestAnimationFrame(() => setTheme(currentTheme === "dark" ? "dark" : "light"));
 
-    const buildColors = (projects: typeof defaultManagedProjects) => {
+    const buildColors = (projects: typeof defaultManagedProjects): ColorEntry[] => {
       const map = new Map<string, ColorEntry>();
       let total = 0;
       for (const p of projects) {
@@ -172,17 +228,23 @@ export default function ColorLibraryPage() {
           });
         }
       }
-      setColors([...map.values()]);
+      const result = [...map.values()];
+      setColors(result);
       setTotalEntries(total);
+      return result;
     };
 
     fetch("/api/content", { cache: "no-store" })
       .then(r => r.ok ? r.json() : Promise.reject(new Error("unavailable")))
       .then((content: PortfolioContent) => {
         setDisplayName(content.settings.displayName);
-        buildColors(content.projects);
+        const built = buildColors(content.projects);
+        if (built.length > 0) generatePalettes(built[Math.floor(Math.random() * built.length)]);
       })
-      .catch(() => buildColors(defaultManagedProjects));
+      .catch(() => {
+        const built = buildColors(defaultManagedProjects);
+        if (built.length > 0) generatePalettes(built[Math.floor(Math.random() * built.length)]);
+      });
   }, []);
 
   useEffect(() => {
@@ -196,7 +258,7 @@ export default function ColorLibraryPage() {
     }), { threshold: 0.08 });
     document.querySelectorAll("[data-reveal]").forEach(node => reveal.observe(node));
     return () => reveal.disconnect();
-  }, [colors.length, palette.length]);
+  }, [colors.length, palettes.length]);
 
   const switchTheme = () => {
     const next = theme === "light" ? "dark" : "light";
@@ -210,13 +272,13 @@ export default function ColorLibraryPage() {
     items: colors.filter(c => classify(c.hex) === family.id),
   })).filter(g => g.items.length > 0);
 
-  const maxCount = Math.max(...colors.map(c => c.count), 1);
+  
 
   return <main className="bases-page colors-page">
     <header className="site-header bases-header">
       <Link className="wordmark" href="/#top"><b>{displayName}.</b><span>FASHION PRINT DESIGNER</span></Link>
       <div className="page-switch" aria-label="Page switch">
-        <Link href="/">{t.portfolio}</Link>
+        <AdminLink href="/">{t.portfolio}</AdminLink>
         <Link href="/bases">{t.bases}</Link>
         <Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link>
         <Link className="active" href="/colors">{t.colors}</Link>
@@ -227,7 +289,8 @@ export default function ColorLibraryPage() {
       </div>
     </header>
 
-    <section className="garment-library garment-library-route" id="top">
+    <div className="colors-split">
+    <section className="garment-library garment-library-route colors-left" id="top">
       <div className="garment-library-head" data-reveal>
         <div className="section-tag"><span>01</span>COLOR ARCHIVE SYSTEM</div>
         <h1>{t.title}</h1>
@@ -248,8 +311,7 @@ export default function ColorLibraryPage() {
         <div className="color-grid">
           {group.items.map(color => {
             const pct = totalEntries ? (color.count / totalEntries) * 100 : 0;
-            const barPct = (color.count / maxCount) * 100;
-            return <article className="color-card" key={color.hex} onClick={() => generatePalette(color)} role="button" tabIndex={0} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); generatePalette(color); } }}>
+            return <article className="color-card" key={color.hex} onClick={() => generatePalettes(color)} role="button" tabIndex={0} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); generatePalettes(color); } }}>
             <div className="color-swatch" style={{ background: color.hex }}>
               {!isLight(color.hex) && <span className="swatch-hex-light">{color.hex}</span>}
               {isLight(color.hex) && <span className="swatch-hex-dark">{color.hex}</span>}
@@ -257,10 +319,7 @@ export default function ColorLibraryPage() {
             <div className="color-info">
               <h3>{lang === "zh" ? color.zh : color.en}</h3>
               <span>{color.hex.toUpperCase()}</span>
-              <div className="color-ratio">
-                <div className="ratio-bar"><div className="ratio-fill" style={{ width: `${barPct}%`, background: color.hex }} /></div>
-                <small>{t.ratio} {pct.toFixed(1)}% · {color.count}/{totalEntries}</small>
-              </div>
+              <small>{t.ratio} {pct.toFixed(1)}% · {color.count}/{totalEntries}</small>
               <small>{t.used} {color.projects.length} {t.projects}</small>
               {color.pairs.length > 0 && <div className="color-pairs">
                 <small className="pairs-label">{t.pairs}</small>
@@ -275,24 +334,33 @@ export default function ColorLibraryPage() {
           })}
         </div>
       </div>)}
-
-      {/* 推荐配色方案 */}
-      <div className="palette-generator" data-reveal>
-        <div className="palette-head">
-          <div className="section-tag"><span>02</span>{t.paletteTitle}</div>
-          <span className={`palette-copied ${copied ? "show" : ""}`}>{t.copied} ✓</span>
-        </div>
-        <p className="palette-hint">{palette.length > 0 ? t.paletteHint : t.clickToGen}</p>
-        {palette.length > 0 && <div className="palette-display">
-          {palette.map((slot, i) => <div className="palette-slot" key={i} style={{ background: slot.hex }}>
-            <span className={isLight(slot.hex) ? "palette-label-dark" : "palette-label-light"}>
-              <b>{slot.hex}</b>
-              <small>{lang === "zh" ? slot.zh : slot.en}</small>
-            </span>
-          </div>)}
-        </div>}
-      </div>
     </section>
+
+    {/* 配色方案面板（右侧固定） */}
+    <aside className="palette-float-panel colors-right" data-reveal>
+      <div className="palette-float-head">
+        <div className="section-tag"><span>02</span>{t.paletteTitle}</div>
+        <span className={`palette-copied ${copied ? "show" : ""}`}>{t.copied} ✓</span>
+      </div>
+      <p className="palette-float-hint">{palettes.length > 0 ? t.paletteHint : t.clickToGen}</p>
+      {palettes.length > 0 && <div className="palette-float-list">
+        {palettes.map(set => <div className="palette-float-set" key={set.id}>
+          <div className="palette-set-name">{lang === "zh" ? set.name.zh : set.name.en}</div>
+          <div className="palette-set-strip">
+            {set.slots.map((slot, i) => <div key={i} style={{ background: slot.hex, flexGrow: slot.ratio, flexBasis: 0 }} />)}
+          </div>
+          <div className="palette-set-colors">
+            {set.slots.map((slot, i) => <div className="palette-color-row" key={i}>
+              <i style={{ background: slot.hex }} />
+              <b>{slot.hex.toUpperCase()}</b>
+              <span>{lang === "zh" ? slot.zh : slot.en}</span>
+              <em>{slot.ratio}%</em>
+            </div>)}
+          </div>
+        </div>)}
+      </div>}
+    </aside>
+    </div>
 
     <footer className="bases-footer">
       <span>© 2026 {displayName}</span>
