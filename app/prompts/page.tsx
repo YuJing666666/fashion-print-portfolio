@@ -23,6 +23,7 @@ const copy = {
     title: "提示词库",
     intro: "AI 生成的服装图案视觉，附完整提示词、模型参数与配色方案。点击复制提示词，点击下载图片。",
     portfolio: "作品集",
+    gallery: "画廊",
     bases: "基模库",
     prompts: "提示词库",
     colors: "配色库",
@@ -44,6 +45,7 @@ const copy = {
     title: "AI PROMPT LIBRARY",
     intro: "AI-generated fashion print visuals with full prompts, model parameters and color palettes. Click to copy, download and explore.",
     portfolio: "PORTFOLIO",
+    gallery: "GALLERY",
     bases: "GARMENT BASES",
     prompts: "PROMPTS",
     colors: "COLORS",
@@ -140,8 +142,9 @@ export default function PromptLibraryPage() {
       <Link className="wordmark" href="/#top"><b>YOUR NAME.</b><span>FASHION PRINT DESIGNER</span></Link>
 <div className="page-switch" aria-label="Page switch">
 <AdminLink href="/">{t.portfolio}</AdminLink>
-<Link href="/bases">{t.bases}</Link>
-        <Link className="active" href="/prompts">{t.prompts}</Link>
+<Link href="/gallery">{t.gallery}</Link>
+<Link className="active" href="/prompts">{t.prompts}</Link>
+        <Link href="/bases">{t.bases}</Link>
         <Link href="/colors">{t.colors}</Link>
       </div>
       <div className="header-actions">

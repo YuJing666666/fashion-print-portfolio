@@ -10,18 +10,21 @@ import {
   type Lang,
   type ManagedProject,
   type PortfolioContent,
+  type ResumeData,
+  type ResumeEntry,
   type SiteSettings,
 } from "../projects";
 
-type Panel = "overview" | "identity" | "typography" | "software" | "projects";
+type Panel = "overview" | "identity" | "resume" | "typography" | "software" | "projects";
 type AdminResponse = PortfolioContent & { actor?: { email?: string } };
 
 const panels: { id: Panel; index: string; label: string; hint: string }[] = [
   { id: "overview", index: "00", label: "控制台", hint: "Overview" },
   { id: "identity", index: "01", label: "站点信息", hint: "Identity & copy" },
-  { id: "typography", index: "02", label: "字体与视觉", hint: "Type & color" },
-  { id: "software", index: "03", label: "软件能力", hint: "Tools & purpose" },
-  { id: "projects", index: "04", label: "作品管理", hint: "Cases & order" },
+  { id: "resume", index: "02", label: "个人简历", hint: "Resume & profile" },
+  { id: "typography", index: "03", label: "字体与视觉", hint: "Type & color" },
+  { id: "software", index: "04", label: "软件能力", hint: "Tools & purpose" },
+  { id: "projects", index: "05", label: "作品管理", hint: "Cases & order" },
 ];
 
 const categoryOptions: { value: Category; label: string }[] = [
@@ -52,7 +55,7 @@ export default function AdminPage() {
       })
       .then(data => {
         if (cancelled) return;
-        setContent({ settings: data.settings, projects: data.projects });
+        setContent({ settings: { ...data.settings, resume: data.settings.resume ?? defaultSiteSettings.resume }, projects: data.projects });
         setActor(data.actor?.email || "站点所有者");
         setSelectedSlug(data.projects[0]?.slug || "");
         setStatus("所有修改在保存后公开生效");
@@ -81,6 +84,11 @@ export default function AdminPage() {
   const updateLocalizedSetting = (key: "heroIntro" | "manifesto" | "about", lang: Lang, value: string) => {
     const current = state.settings[key];
     updateSettings({ [key]: { ...current, [lang]: value } });
+  };
+
+  const updateResumeEntry = (section: "education" | "work", index: number, patch: Partial<ResumeEntry>) => {
+    const list = state.settings.resume[section];
+    updateSettings({ resume: { ...state.settings.resume, [section]: list.map((entry, i) => i === index ? { ...entry, ...patch } : entry) } });
   };
 
   const updateProject = (slug: string, updater: (project: ManagedProject) => ManagedProject) => {
@@ -189,8 +197,81 @@ export default function AdminPage() {
           </div>)}
         </div>}
 
+        {content && panel === "resume" && <div className="editor-panel">
+          <div className="panel-intro"><span>02 / RESUME</span><h2>个人简历信息</h2><p>个人信息、教育背景与工作经历。保存后同步到前台简历区域。</p></div>
+          <div className="resume-editor">
+            {/* 基本字段 */}
+            <div className="field-grid two">
+              <label><span>年龄 / AGE</span><input value={state.settings.resume.age} onChange={event => updateSettings({ resume: { ...state.settings.resume, age: event.target.value } })} /></label>
+              <label><span>工龄 / EXPERIENCE</span><input value={state.settings.resume.workYears} onChange={event => updateSettings({ resume: { ...state.settings.resume, workYears: event.target.value } })} /></label>
+            </div>
+            {/* 专业 */}
+            <div className="resume-section">
+              <b>专业 / MAJORS</b>
+              <div className="resume-tag-editor">
+                {state.settings.resume.majors.map((m, i) => (
+                  <div key={i} className="resume-tag-row">
+                    <input value={m.zh} onChange={event => updateSettings({ resume: { ...state.settings.resume, majors: state.settings.resume.majors.map((item, idx) => idx === i ? { ...item, zh: event.target.value } : item) } })} />
+                    <input value={m.en} onChange={event => updateSettings({ resume: { ...state.settings.resume, majors: state.settings.resume.majors.map((item, idx) => idx === i ? { ...item, en: event.target.value } : item) } })} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* 爱好 */}
+            <div className="resume-section">
+              <b>爱好 / HOBBIES</b>
+              <div className="resume-tag-editor">
+                {state.settings.resume.hobbies.map((h, i) => (
+                  <div key={i} className="resume-tag-row">
+                    <input value={h.zh} onChange={event => updateSettings({ resume: { ...state.settings.resume, hobbies: state.settings.resume.hobbies.map((item, idx) => idx === i ? { ...item, zh: event.target.value } : item) } })} />
+                    <input value={h.en} onChange={event => updateSettings({ resume: { ...state.settings.resume, hobbies: state.settings.resume.hobbies.map((item, idx) => idx === i ? { ...item, en: event.target.value } : item) } })} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* 教育经历 */}
+            <div className="resume-section">
+              <b>教育经历 / EDUCATION</b>
+              {state.settings.resume.education.map((edu, i) => (
+                <div className="resume-entry-editor" key={i}>
+                  <span>EDU 0{i + 1}</span>
+                  <div className="field-grid two">
+                    <label><span>时间段（中文）</span><input value={edu.period.zh} onChange={event => updateResumeEntry("education", i, { period: { ...edu.period, zh: event.target.value } })} /></label>
+                    <label><span>PERIOD (EN)</span><input value={edu.period.en} onChange={event => updateResumeEntry("education", i, { period: { ...edu.period, en: event.target.value } })} /></label>
+                    <label><span>学校（中文）</span><input value={edu.title.zh} onChange={event => updateResumeEntry("education", i, { title: { ...edu.title, zh: event.target.value } })} /></label>
+                    <label><span>SCHOOL (EN)</span><input value={edu.title.en} onChange={event => updateResumeEntry("education", i, { title: { ...edu.title, en: event.target.value } })} /></label>
+                    <label><span>学历（中文）</span><input value={edu.subtitle.zh} onChange={event => updateResumeEntry("education", i, { subtitle: { ...edu.subtitle, zh: event.target.value } })} /></label>
+                    <label><span>DEGREE (EN)</span><input value={edu.subtitle.en} onChange={event => updateResumeEntry("education", i, { subtitle: { ...edu.subtitle, en: event.target.value } })} /></label>
+                  </div>
+                  <label><span>备注（中文）</span><input value={edu.note.zh} onChange={event => updateResumeEntry("education", i, { note: { ...edu.note, zh: event.target.value } })} /></label>
+                  <label><span>NOTE (EN)</span><input value={edu.note.en} onChange={event => updateResumeEntry("education", i, { note: { ...edu.note, en: event.target.value } })} /></label>
+                </div>
+              ))}
+            </div>
+            {/* 工作经历 */}
+            <div className="resume-section">
+              <b>工作经历 / WORK EXPERIENCE</b>
+              {state.settings.resume.work.map((work, i) => (
+                <div className="resume-entry-editor" key={i}>
+                  <span>WORK 0{i + 1}</span>
+                  <div className="field-grid two">
+                    <label><span>时间段（中文）</span><input value={work.period.zh} onChange={event => updateResumeEntry("work", i, { period: { ...work.period, zh: event.target.value } })} /></label>
+                    <label><span>PERIOD (EN)</span><input value={work.period.en} onChange={event => updateResumeEntry("work", i, { period: { ...work.period, en: event.target.value } })} /></label>
+                    <label><span>公司（中文）</span><input value={work.title.zh} onChange={event => updateResumeEntry("work", i, { title: { ...work.title, zh: event.target.value } })} /></label>
+                    <label><span>COMPANY (EN)</span><input value={work.title.en} onChange={event => updateResumeEntry("work", i, { title: { ...work.title, en: event.target.value } })} /></label>
+                    <label><span>职位（中文）</span><input value={work.subtitle.zh} onChange={event => updateResumeEntry("work", i, { subtitle: { ...work.subtitle, zh: event.target.value } })} /></label>
+                    <label><span>ROLE (EN)</span><input value={work.subtitle.en} onChange={event => updateResumeEntry("work", i, { subtitle: { ...work.subtitle, en: event.target.value } })} /></label>
+                  </div>
+                  <label><span>备注（中文）</span><input value={work.note.zh} onChange={event => updateResumeEntry("work", i, { note: { ...work.note, zh: event.target.value } })} /></label>
+                  <label><span>NOTE (EN)</span><input value={work.note.en} onChange={event => updateResumeEntry("work", i, { note: { ...work.note, en: event.target.value } })} /></label>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>}
+
         {content && panel === "typography" && <div className="editor-panel">
-          <div className="panel-intro"><span>02 / TYPE & COLOR</span><h2>粗体 × 细体 × 手写</h2><p>保留编辑感的秩序，再用手写字体制造个性偏差。</p></div>
+          <div className="panel-intro"><span>03 / TYPE & COLOR</span><h2>粗体 × 细体 × 手写</h2><p>保留编辑感的秩序，再用手写字体制造个性偏差。</p></div>
           <div className="type-controls">
             <div className="control-stack">
               <label className="color-field"><span>强调色 / ACCENT</span><input type="color" value={state.settings.accentColor} onChange={event => updateSettings({ accentColor: event.target.value })} /><input value={state.settings.accentColor.toUpperCase()} onChange={event => updateSettings({ accentColor: event.target.value })} /></label>
@@ -204,7 +285,7 @@ export default function AdminPage() {
         </div>}
 
         {content && panel === "software" && <div className="editor-panel">
-          <div className="panel-intro"><span>03 / SOFTWARE</span><h2>软件能力与实际作用</h2><p>软件名用手写字体，说明保持简短，让访客快速理解它在你的工作流里做什么。</p></div>
+          <div className="panel-intro"><span>04 / SOFTWARE</span><h2>软件能力与实际作用</h2><p>软件名用手写字体，说明保持简短，让访客快速理解它在你的工作流里做什么。</p></div>
           <div className="software-editor">
             {state.settings.software.map((tool, index) => <article key={tool.id}>
               <div className="software-index"><b>{tool.code}</b><span>TOOL 0{index + 1}</span><label><input type="checkbox" checked={tool.enabled} onChange={event => updateSettings({ software: state.settings.software.map(item => item.id === tool.id ? { ...item, enabled: event.target.checked } : item) })} />展示</label></div>

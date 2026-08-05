@@ -20,7 +20,7 @@ import {
 
 const copy = {
   zh: {
-    nav: ["首页", "关于", "能力", "案例", "联系"],
+    nav: ["首页", "关于", "简历", "能力", "案例", "联系"],
     eyebrow: "服装图案设计 / 平面 / 插画",
     heroA: "IDEAS INTO",
     heroB: "WEARABLE",
@@ -33,6 +33,11 @@ const copy = {
     profileBody: "以服装图案为核心，我同时处理平面系统、插画、配色与印花落地。工作从趋势与素材研究开始，经过草图、图形系统、上身比例测试和工艺建议，最终形成完整而可沟通的视觉方案。",
     serviceTitle: "服务范围",
     processTitle: "工作流程",
+    profileTitle: "个人简历",
+    profileNote: "基本信息、教育背景与工作经历一览",
+    personalInfo: "个人信息",
+    education: "教育水平",
+    workExperience: "工作经历",
     softwareTitle: "软件掌握",
     softwareNote: "12 件常用工具 · 覆盖矢量、三维与 AI 协同全流程 · 悬停暂停并放大查看",
     casesTitle: "24 个图案实验",
@@ -60,12 +65,12 @@ const copy = {
     disclaimer: "本页为概念案例。工艺、尺寸与上身效果均为提案，进入生产前需打样验证。",
     close: "关闭案例",
     contactKicker: "自由合作 / 项目委托 / 视觉交流",
-    contactTitle: "LET’S MAKE\nSOMETHING\nWEARABLE.",
+    contactTitle: "THANK [YOU]\nWATCHING.",
     contactBody: "如果你正在寻找服装图案、视觉方向或插画合作，欢迎联系。",
     mail: "发起合作",
   },
   en: {
-    nav: ["HOME", "ABOUT", "SKILLS", "CASES", "CONTACT"],
+    nav: ["HOME", "ABOUT", "RESUME", "SKILLS", "CASES", "CONTACT"],
     eyebrow: "FASHION PRINT / GRAPHICS / ILLUSTRATION",
     heroA: "IDEAS INTO",
     heroB: "WEARABLE",
@@ -78,6 +83,11 @@ const copy = {
     profileBody: "Fashion print is my core practice, supported by graphic systems, illustration, color and production thinking. Each project moves from research and sketching to graphic systems, on-body scale tests and a proposed technique.",
     serviceTitle: "SERVICES",
     processTitle: "PROCESS",
+    profileTitle: "RESUME",
+    profileNote: "Personal info, education background and work experience at a glance",
+    personalInfo: "PERSONAL INFO",
+    education: "EDUCATION",
+    workExperience: "EXPERIENCE",
     softwareTitle: "SOFTWARE MASTERY",
     softwareNote: "12 essential tools across vector, 3D and AI workflows · hover to pause and zoom",
     casesTitle: "24 PRINT EXPERIMENTS",
@@ -105,7 +115,7 @@ const copy = {
     disclaimer: "This is a concept study. Technique, dimensions and mockups are proposals that require sampling before production.",
     close: "CLOSE CASE",
     contactKicker: "FREELANCE / COMMISSION / COLLABORATION",
-    contactTitle: "LET’S MAKE\nSOMETHING\nWEARABLE.",
+    contactTitle: "THANK [YOU]\nWATCHING.",
     contactBody: "For fashion print, visual direction or illustration collaborations, get in touch.",
     mail: "START A PROJECT",
   },
@@ -160,14 +170,19 @@ function SoftwareCard({ tool, lang }: { tool: SoftwareItem; lang: Lang }) {
 
 function ContactIcon({ id }: { id: string }) {
   if (id === "qq") return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 2C7.6 2 4 5.6 4 10c0 1.8.6 3.4 1.6 4.7L5 18l3.3-1.5c1.1.5 2.4.8 3.7.8s2.6-.3 3.7-.8L19 18l-.6-3.3c1-1.3 1.6-2.9 1.6-4.7 0-4.4-3.6-8-8-8zm-2.5 6a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm5 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-2.5 4.5c1.2 0 2.3.4 2.8 1-.6.5-1.7.8-2.8.8s-2.2-.3-2.8-.8c.5-.6 1.6-1 2.8-1z" />
+    <svg viewBox="0 0 1024 1024" fill="currentColor" aria-hidden="true">
+      <path d="M824.8 613.2c-16-51.4-34.4-94.6-62.7-165.3C766.5 262.2 689.3 112 511.5 112 331.7 112 256.2 265.2 261 447.9c-28.4 70.8-46.7 113.7-62.7 165.3-34 109.5-23 154.8-14.6 155.8 18 2.2 70.1-82.4 70.1-82.4 0 49 25.2 112.9 79.8 159-26.4 8.1-85.7 29.9-71.6 53.8 11.4 19.3 196.2 12.3 249.5 6.3 53.3 6 238.1 13 249.5-6.3 14.1-23.8-45.3-45.7-71.6-53.8 54.6-46.2 79.8-110.1 79.8-159 0 0 52.1 84.6 70.1 82.4 8.4-1.1 19.4-46.3-14.6-155.8z" />
     </svg>
   );
   if (id === "wechat") return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M9 3C5.1 3 2 5.7 2 9c0 1.7.9 3.2 2.2 4.2L3.5 16 6 14.8c.6.2 1.2.3 1.9.3-.1-.4-.2-.9-.2-1.3 0-3 2.7-5.5 6-5.5h.5C13.6 5 11.5 3 9 3zm-2.5 4a1 1 0 110 2 1 1 0 010-2zm5 0a1 1 0 110 2 1 1 0 010-2z" />
       <path d="M22 13.5c0-2.5-2.5-4.5-5.5-4.5S11 11 11 13.5s2.5 4.5 5.5 4.5c.5 0 1-.1 1.5-.2L20.5 19l-.5-2c1.2-.7 2-2 2-3.5zm-7 .5a.7.7 0 110-1.4.7.7 0 010 1.4zm3 0a.7.7 0 110-1.4.7.7 0 010 1.4z" />
+    </svg>
+  );
+  if (id === "phone") return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
     </svg>
   );
   return (
@@ -200,7 +215,7 @@ export default function Home() {
     const selected = settings.heroSlugs
       .map(slug => portfolioProjects.find(project => project.slug === slug))
       .filter((project): project is ManagedProject => Boolean(project));
-    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 5);
+    return [...selected, ...portfolioProjects.filter(project => !selected.includes(project))].slice(0, 6);
   }, [portfolioProjects, settings.heroSlugs]);
 
   useEffect(() => {
@@ -216,7 +231,7 @@ export default function Home() {
             ...content.settings.software,
             ...defaultSiteSettings.software.filter(s => !existingIds.has(s.id)),
           ];
-          setSettings({ ...content.settings, software: mergedSoftware });
+          setSettings({ ...content.settings, software: mergedSoftware, resume: content.settings.resume ?? defaultSiteSettings.resume });
           setPortfolioProjects(content.projects);
         }
       })
@@ -245,6 +260,13 @@ export default function Home() {
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
   }, [lang]);
 
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShowTopBtn(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // 半调揭示效果：鼠标划过淡淡照出底下的荧光色半调涂鸦图案
   useEffect(() => {
     let raf = 0;
@@ -265,7 +287,7 @@ export default function Home() {
 
   // 左侧刻度尺导航：scrollspy 记录当前所在 section
   useEffect(() => {
-    const ids = ["top", "about", "skills", "cases", "contact"];
+    const ids = ["top", "about", "profile", "skills", "cases", "contact"];
     const sections = ids.map(id => document.getElementById(id)).filter((n): n is HTMLElement => Boolean(n));
     if (!sections.length) return;
     const obs = new IntersectionObserver(entries => {
@@ -352,7 +374,7 @@ export default function Home() {
     localStorage.setItem("portfolio-theme", next);
   };
 
-  const sectionIds = ["top", "about", "skills", "cases", "contact"];
+  const sectionIds = ["top", "about", "profile", "skills", "cases", "contact"];
   const activeIndex = sectionIds.indexOf(activeSection);
   const tickerRows = useMemo(() => {
     const map = new Map(defaultSiteSettings.software.map(t => [t.id, t]));
@@ -374,9 +396,9 @@ export default function Home() {
   >
     <header className="site-header">
       <a className="wordmark" href="#top"><b>{settings.displayName}.</b><span>FASHION PRINT DESIGNER</span></a>
-      <div className="page-switch" aria-label="Page switch"><AdminLink className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</AdminLink><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link><Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
+      <div className="page-switch" aria-label="Page switch"><AdminLink className="active" href="/">{lang === "zh" ? "作品集" : "PORTFOLIO"}</AdminLink><Link href="/gallery">{lang === "zh" ? "画廊" : "GALLERY"}</Link><Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link><Link href="/bases">{lang === "zh" ? "基模库" : "GARMENT BASES"}</Link><Link href="/colors">{lang === "zh" ? "配色库" : "COLORS"}</Link></div>
       <nav aria-label="Primary navigation" style={{display:'none'}}>
-        {["top", "about", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id} className={index === 4 ? "nav-crossed" : undefined}>{t.nav[index]}</a>)}
+        {["top", "about", "profile", "skills", "cases", "contact"].map((id, index) => <a href={`#${id}`} key={id} className={index === 5 ? "nav-crossed" : undefined}>{t.nav[index]}</a>)}
       </nav>
       <div className="header-actions">
         <button className="theme-toggle" onClick={switchTheme} aria-label={theme === "light" ? "开启黑夜模式" : "切换为白天模式"} aria-pressed={theme === "dark"}><i /><span>{theme === "light" ? "NIGHT" : "DAY"}</span></button>
@@ -410,29 +432,44 @@ export default function Home() {
       event.currentTarget.style.setProperty("--my", `${(event.clientY - rect.top) / rect.height - .5}`);
     }}>
       <div className="hero-grid" aria-hidden="true" />
+      <div className="hero-deco" aria-hidden="true">
+        {/* ✦ 2大1小 实心/空心 */}
+        <span className="hd-spark hd-solid" style={{top:"7%",left:"13%",fontSize:"4.5rem"}}>✦</span>
+        <span className="hd-spark hd-hollow" style={{top:"54%",right:"8%",fontSize:"4rem"}}>✦</span>
+        {/* 曲线蚂蚁线 SVG 粗细不一 */}
+        <svg className="hd-curve hd-curve-1" viewBox="0 0 300 100" preserveAspectRatio="none"><path d="M0,80 Q75,10 150,50 T300,30" fill="none" /></svg>
+        <svg className="hd-curve hd-curve-2" viewBox="0 0 300 100" preserveAspectRatio="none"><path d="M0,20 Q100,90 200,40 T300,70" fill="none" /></svg>
+        <svg className="hd-curve hd-curve-3" viewBox="0 0 300 100" preserveAspectRatio="none"><path d="M10,50 Q80,5 160,60 Q220,90 290,20" fill="none" /></svg>
+        <svg className="hd-curve hd-curve-4" viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M0,60 C50,10 100,110 150,50 S250,10 300,60" fill="none" /></svg>
+        <svg className="hd-curve hd-curve-5" viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M0,40 Q60,0 120,40 T240,40 T300,40" fill="none" /></svg>
+        <svg className="hd-curve hd-curve-6" viewBox="0 0 300 100" preserveAspectRatio="none"><path d="M0,90 C60,20 120,80 180,30 S280,70 300,10" fill="none" /></svg>
+        <svg className="hd-curve hd-curve-7" viewBox="0 0 300 90" preserveAspectRatio="none"><path d="M0,30 Q70,80 140,20 T300,50" fill="none" /></svg>
+      </div>
       <div className="hero-copy">
         <p className="eyebrow"><i />{t.eyebrow}</p>
         <h1 aria-label={`${t.heroA} ${t.heroB} ${t.heroC}`}><span>{t.heroA}</span><span>{t.heroB}</span><span>{t.heroC}</span></h1>
-        <span className="hero-script" aria-hidden="true">made by hand — Y.N.</span>
-        <div className="hero-bottom"><p>{settings.heroIntro[lang]}</p></div>
+        <span className="hero-script" aria-hidden="true">Designed by me</span>
+        <p className="hero-intro">{settings.heroIntro[lang]}</p>
+        <div className="hero-orbit">
+          <svg className="orbit-ring" viewBox="0 0 160 160" aria-hidden="true">
+            <defs><path id="orbit-path" d="M80,80 m-66,0 a66,66 0 1,1 132,0 a66,66 0 1,1 -132,0" /></defs>
+            <text><textPath href="#orbit-path" startOffset="0">CONCEPT STUDIES · PRINT ARCHIVE · 2026 · CONCEPT STUDIES · PRINT ARCHIVE · 2026 · </textPath></text>
+          </svg>
+          <span className="orbit-num">{portfolioProjects.length}</span>
+          <small>CONCEPT<br />STUDIES</small>
+        </div>
       </div>
       <div className="hero-visual" aria-label="Selected concept fashion cases">
         <div className="hero-boards">
-          {heroProjects.map((project, index) => <button className={`hero-board board-${index + 1}`} key={project.slug} onClick={event => openProject(project, event.currentTarget)} aria-label={`${t.open}: ${project.title}`}>
+          {heroProjects.map((project, index) => <div className={`hero-board board-${index + 1}`} key={project.slug}>
             <div className="single-model" role="img" aria-label={`${project.title} single female model garment effect`} style={modelCropStyle(project)} />
             <span>{project.id} / {project.title}</span>
-          </button>)}
+          </div>)}
         </div>
-        <div className="hero-color-card" aria-hidden="true"><small>COLOR SYSTEM / 01</small><div className="hero-color-swatches"><i /><i /><i /><i /></div><b>#C8FF19<br />#1746D3<br />#F83F99<br />#111111</b></div>
-        <div className="hero-type-card" aria-hidden="true"><span>TYPE STUDY</span><b>PRINT<br />SIGNAL</b><em>03 / 24</em></div>
         <div className="hero-tape" aria-hidden="true" />
-        <div className="hero-annotation" aria-hidden="true"><span>SAMPLE REF</span><b>SS26 — 01</b><em>↗ review</em></div>
-        <div className="hero-memo" aria-hidden="true"><span>MEMO</span><b>↳ check repeat<br />scale before<br />production</b><i /></div>
-        <div className="hero-calendar" aria-hidden="true"><b>15</b><small>FEB<br />2026</small><i /></div>
-        <div className="hero-orbit"><span>{portfolioProjects.length}</span><small>CONCEPT<br />STUDIES</small></div>
+        <div className="hero-tape hero-tape-2" aria-hidden="true" />
       </div>
 
-      <a href="#cases" className="arrow-link hero-case-link">{t.enter}<b>↘</b></a>
       <div className="hero-contacts" data-copied={copiedId ?? ""}>
         {contacts.map((contact, i) => (
           <button key={contact.id} type="button"
@@ -442,19 +479,26 @@ export default function Home() {
             onClick={() => copyContact(contact)}
             aria-label={`复制${contact.label}: ${contact.value}`}>
             <span className="hero-contact-icon"><ContactIcon id={contact.id} /></span>
-            <span className="hero-contact-text">
-              <small>{contact.label}</small>
-              <b>{copiedId === contact.id ? "已复制 ✓" : contact.value}</b>
-            </span>
+<span className="hero-contact-text">
+<b>{copiedId === contact.id ? "已复制 ✓" : contact.value}</b>
+</span>
           </button>
         ))}
       </div>
+      <button type="button" className={`hero-phone-bar${copiedId === "phone" ? " copied" : ""}`}
+        onClick={() => copyContact({ id: "phone", value: "17722850281" })}
+        aria-label="复制手机号: 17722850281">
+        <span className="hero-phone-icon"><ContactIcon id="phone" /></span>
+        <span className="hero-phone-text"><b>{copiedId === "phone" ? "已复制 ✓" : "17722850281"}</b></span>
+      </button>
+      <div className="hero-mantra" aria-hidden="true">DESIGN FREELY / MAKE IT HAPPEN</div>
       <div className="hero-foot"><span>{t.concept}</span><span>{t.scroll} ↓</span></div>
     </section>
 
     <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
 
     <section className="about" id="about">
+      <div className="about-deco-bl" aria-hidden="true"><div className="hero-cal-mini"><small>{new Date().toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { month: "short" }).toUpperCase()} · {new Date().getFullYear()}</small><div className="cal-grid">{Array.from({ length: 31 }, (_, i) => i + 1).map(d => <span key={d} className={d === new Date().getDate() ? "today" : ""}>{d}</span>)}</div></div></div>
       <div className="section-tag" data-reveal><span>01</span>POINT OF VIEW</div>
       <div className="manifesto" data-reveal><p>{settings.manifesto[lang]}</p><i>↳</i></div>
       <div className="about-detail" data-reveal><div className="about-label">{settings.displayName}<br />PATTERN DESIGNER<br />{settings.city}</div><p>{settings.about[lang]}</p></div>
@@ -463,8 +507,74 @@ export default function Home() {
 
     <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
 
+    <section className="profile" id="profile">
+      <div className="profile-head" data-reveal>
+        <div className="section-tag"><span>02</span>PERSONAL PROFILE</div>
+        <h2>{t.profileTitle}</h2>
+        <p>{t.profileNote}</p>
+      </div>
+      <div className="profile-grid" data-reveal>
+        {/* 点缀图案 */}
+        <div className="profile-deco profile-deco-1" aria-hidden="true" />
+        <div className="profile-deco profile-deco-2" aria-hidden="true" />
+
+        {/* 个人信息 */}
+        <div className="profile-column">
+          <h3 className="profile-column-title">{t.personalInfo}</h3>
+          <dl className="profile-list">
+            <div><dt>{lang === "zh" ? "姓名" : "NAME"}</dt><dd className="hl-name">{settings.displayName}</dd></div>
+            <div><dt>{lang === "zh" ? "年龄" : "AGE"}</dt><dd className="hl-age">{settings.resume.age}</dd></div>
+            <div><dt>{lang === "zh" ? "工龄" : "EXP"}</dt><dd className="hl-exp">{settings.resume.workYears}</dd></div>
+            <div><dt>{lang === "zh" ? "职位" : "TITLE"}</dt><dd>PATTERN DESIGNER</dd></div>
+            <div><dt>{lang === "zh" ? "所在地" : "CITY"}</dt><dd>{settings.city}</dd></div>
+            <div><dt>{lang === "zh" ? "邮箱" : "EMAIL"}</dt><dd>{settings.email}</dd></div>
+            <div><dt>QQ</dt><dd>3176087576</dd></div>
+            <div><dt>{lang === "zh" ? "微信" : "WECHAT"}</dt><dd>17722850281</dd></div>
+          </dl>
+          <div className="profile-tags">
+            <span className="profile-tags-label">{lang === "zh" ? "专业" : "MAJORS"}</span>
+            <div className="profile-tags-items">{settings.resume.majors.map((m, i) => <span key={i} className="profile-tag hl-major">{m[lang]}</span>)}</div>
+          </div>
+          <div className="profile-tags">
+            <span className="profile-tags-label">{lang === "zh" ? "爱好" : "HOBBIES"}</span>
+            <div className="profile-tags-items">{settings.resume.hobbies.map((h, i) => <span key={i} className="profile-tag profile-tag-hobby">{h[lang]}</span>)}</div>
+          </div>
+        </div>
+        {/* 教育水平 */}
+        <div className="profile-column">
+          <h3 className="profile-column-title">{t.education}</h3>
+          <div className="profile-timeline">
+            {settings.resume.education.map((edu, i) => (
+              <div className="profile-entry" key={i}>
+                <span className="profile-period">{edu.period[lang]}</span>
+                <b className="profile-name hl-school">{edu.title[lang]}</b>
+                <span className="profile-role">{edu.subtitle[lang]}</span>
+                <p className="profile-note">{edu.note[lang]}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* 工作经历 */}
+        <div className="profile-column">
+          <h3 className="profile-column-title">{t.workExperience}</h3>
+          <div className="profile-timeline">
+            {settings.resume.work.map((work, i) => (
+              <div className="profile-entry" key={i}>
+                <span className="profile-period">{work.period[lang]}</span>
+                <b className="profile-name hl-company">{work.title[lang]}</b>
+                <span className="profile-role hl-role">{work.subtitle[lang]}</span>
+                <p className="profile-note">{work.note[lang]}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
+
     <section className="skills" id="skills">
-      <div className="skills-head" data-reveal><div className="section-tag"><span>02</span>CAPABILITY SYSTEM</div><h2><em className="hand-note">tools become visual language ↗</em>{t.softwareTitle}</h2><p>{t.softwareNote}</p></div>
+      <div className="skills-head" data-reveal><div className="section-tag"><span>03</span>CAPABILITY SYSTEM</div><h2><em className="hand-note">tools become visual language ↗</em>{t.softwareTitle}</h2><p>{t.softwareNote}</p></div>
       <div className="fashion-tags skill-fashion-tags" data-reveal aria-hidden="true"><span>COLOR SEPARATION / 04</span><span>REPEAT / 64 CM</span><span>CLO 3D FIT</span></div>
       <div className="software-ticker" data-reveal>
         {tickerRows.map((row, i) => (
@@ -482,8 +592,8 @@ export default function Home() {
     <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
 
     <section className="cases" id="cases">
-      <div className="cases-head" data-reveal><div className="section-tag"><span>03</span>CASE ARCHIVE</div><h2>{t.casesTitle}</h2><p>{t.casesIntro}</p></div>
-      <div className="archive-stickers" data-reveal aria-hidden="true"><span>PRINT ARCHIVE</span><span>24 / CONCEPT FILES</span><span>PROPOSED TECHNIQUE</span></div>
+      <div className="cases-head" data-reveal><div className="section-tag"><span>04</span>CASE ARCHIVE</div><h2>{t.casesTitle.replace(/^\d+/, String(portfolioProjects.length))}</h2><p>{t.casesIntro}</p></div>
+      <div className="archive-stickers" data-reveal aria-hidden="true"><span>PRINT ARCHIVE</span><span>{portfolioProjects.length} / CONCEPT FILES</span><span>PROPOSED TECHNIQUE</span></div>
       <div className="filter-bar" role="toolbar" aria-label="Project categories">
         <div>{categories.map(item => <button aria-pressed={category === item} className={category === item ? "active" : ""} key={item} onClick={() => switchCategory(item)}>{item === "all" ? t.all : categoryLabels[item][lang]}</button>)}</div>
         <span>{t.loaded} {String(shown.length).padStart(2, "0")} / {String(filtered.length).padStart(2, "0")}</span>
@@ -505,9 +615,31 @@ export default function Home() {
     <div className="ticker" aria-hidden="true"><div>{Array(2).fill("FASHION PRINT — GRAPHIC SYSTEM — ILLUSTRATION — COLOR & PRODUCTION — ").join("")}</div></div>
 
     <section className="contact" id="contact">
-      <p>{t.contactKicker}</p><h2>{t.contactTitle.split("\n").map(line => <span key={line}>{line}</span>)}</h2>
+      <div className="contact-deco" aria-hidden="true"><span>✦</span><span>＋</span><span>◆</span><span>✕</span></div>
+      <p>{t.contactKicker}</p><h2>{t.contactTitle.split("\n").map((line, i) => <span key={i}>{line.split(/(\[.*?\])/).map((part, j) => part.startsWith("[") ? <i key={j} className="rev">{part.slice(1, -1)}</i> : part)}</span>)}</h2>
       <div className="contact-row"><p>{t.contactBody}</p><a href={`mailto:${settings.email}`}>{t.mail}<i>↗</i></a></div>
+      <div className="contact-credits" data-copied={copiedId ?? ""}>
+        {contacts.map((contact, i) => (
+          <button key={contact.id} type="button"
+            className={`hero-contact contact-btn${copiedId === contact.id ? " copied" : ""}`}
+            data-app={contact.id}
+            onClick={() => copyContact(contact)}
+            aria-label={`复制${contact.label}: ${contact.value}`}>
+            <span className="hero-contact-icon"><ContactIcon id={contact.id} /></span>
+<span className="hero-contact-text">
+<b>{copiedId === contact.id ? "已复制 ✓" : contact.value}</b>
+</span>
+          </button>
+        ))}
+      </div>
+      <button type="button" className={`hero-phone-bar contact-btn${copiedId === "phone" ? " copied" : ""}`}
+        onClick={() => copyContact({ id: "phone", value: "17722850281" })}
+        aria-label="复制手机号: 17722850281">
+        <span className="hero-phone-icon"><ContactIcon id="phone" /></span>
+        <span className="hero-phone-text"><b>{copiedId === "phone" ? "已复制 ✓" : "17722850281"}</b></span>
+      </button>
       <footer><span>© 2026 {settings.displayName}</span><span>CONCEPT PORTFOLIO / {settings.city}</span><a href="/admin">CONTENT ADMIN ↗</a><a href="#top">BACK TO TOP ↑</a></footer>
+      <button className={`back-to-top-btn${showTopBtn ? " is-visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="回到顶部"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg></button>
     </section>
 
     {active && <div className="drawer-layer" role="presentation">

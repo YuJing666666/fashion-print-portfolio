@@ -31,6 +31,22 @@ export type SoftwareItem = {
   mastery: number;
 };
 
+export type ResumeEntry = {
+  period: Localized;
+  title: Localized;
+  subtitle: Localized;
+  note: Localized;
+};
+
+export type ResumeData = {
+  age: string;
+  workYears: string;
+  majors: Localized[];
+  hobbies: Localized[];
+  education: ResumeEntry[];
+  work: ResumeEntry[];
+};
+
 export type SiteSettings = {
   displayName: string;
   city: string;
@@ -43,6 +59,7 @@ export type SiteSettings = {
   handwrittenSoftware: boolean;
   heroSlugs: string[];
   software: SoftwareItem[];
+  resume: ResumeData;
 };
 
 export type ManagedProject = Project & {
@@ -131,6 +148,32 @@ export const defaultSiteSettings: SiteSettings = {
   heroWeight: "900",
   handwrittenSoftware: false,
   heroSlugs: ["static-garden", "signal-burn", "electric-folk"],
+  resume: {
+    age: "26",
+    workYears: "4 年",
+    majors: [
+      zhEn("平面设计", "Graphic Design"),
+      zhEn("服装设计", "Fashion Design"),
+      zhEn("美工", "Visual Art"),
+    ],
+    hobbies: [
+      zhEn("摄影", "Photography"),
+      zhEn("手绘", "Hand Drawing"),
+      zhEn("音乐", "Music"),
+      zhEn("旅行", "Travel"),
+    ],
+    education: [
+      { period: zhEn("2020 — 2024", "2020 — 2024"), title: zhEn("XX 服装学院", "XX Fashion Institute"), subtitle: zhEn("服装与服饰设计 · 本科", "Fashion & Apparel Design · B.A."), note: zhEn("主修服装图案设计、色彩学与印花工艺，毕业设计获院级一等奖", "Focus on print design, color theory and printing; graduation project won faculty award") },
+      { period: zhEn("2019 — 2020", "2019 — 2020"), title: zhEn("XX 数字艺术工作坊", "XX Digital Art Workshop"), subtitle: zhEn("数字印花与 3D 建模 · 短期课程", "Digital Print & 3D Modeling · Short Course"), note: zhEn("系统学习 CLO 3D 虚拟试衣与数字印花分色流程", "Systematic training in CLO 3D virtual fitting and digital color separation workflows") },
+      { period: zhEn("2017 — 2020", "2017 — 2020"), title: zhEn("XX 艺术学校", "XX Art School"), subtitle: zhEn("美术 · 高中", "Fine Arts · High School"), note: zhEn("系统学习素描、色彩与构成，参加省级美术展览", "Systematic training in drawing, color and composition; exhibited at provincial art show") },
+    ],
+    work: [
+      { period: zhEn("2024 — 至今", "2024 — Present"), title: zhEn("XX 服饰有限公司", "XX Apparel Co., Ltd."), subtitle: zhEn("图案设计师", "Print Designer"), note: zhEn("负责季度服装图案开发、印花落地与视觉系统搭建，主导 3 个系列超过 40 款印花", "Seasonal print development, production follow-through and visual system; led 3 collections with 40+ prints") },
+      { period: zhEn("2023 — 2024", "2023 — 2024"), title: zhEn("XX 品牌设计公司", "XX Brand Design Co."), subtitle: zhEn("平面设计师", "Graphic Designer"), note: zhEn("负责品牌视觉、包装设计与电商详情页排版，服务超过 10 个品牌客户", "Brand visuals, packaging and e-commerce layout; served 10+ brand clients") },
+      { period: zhEn("2022 — 2023", "2022 — 2023"), title: zhEn("XX 电商公司", "XX E-commerce Co."), subtitle: zhEn("美工 / 视觉设计", "Visual Designer"), note: zhEn("负责店铺首页、活动专题页与产品主图设计，提升点击率 30%", "Store landing pages, campaign visuals and product imagery; improved CTR by 30%") },
+      { period: zhEn("2021 — 2022", "2021 — 2022"), title: zhEn("XX 设计工作室", "XX Design Studio"), subtitle: zhEn("设计实习生", "Design Intern"), note: zhEn("协助图案绘制、素材整理与三视图排版", "Assisted with artwork, asset management and tech flat layout") },
+    ],
+  },
   software: [
     // 2D 矢量与图像
     { id: "illustrator", code: "Ai", name: "Adobe Illustrator", description: zhEn("矢量图形、技术三视图与连续纹样", "VECTOR GRAPHICS, TECH FLATS & REPEATS"), enabled: true, category: "2d", mastery: 0.95 },

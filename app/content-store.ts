@@ -44,10 +44,21 @@ async function ensureSchema(db: D1Database) {
 
 async function ensureSeeded(db: D1Database) {
   await ensureSchema(db);
-  const settings = await db.prepare("SELECT id FROM portfolio_settings WHERE id = ?").bind("site").first();
-  if (!settings) {
+  const settingsRow = await db.prepare("SELECT data FROM portfolio_settings WHERE id = ?").bind("site").first<{ data: string }>();
+  if (!settingsRow) {
     await db.prepare("INSERT INTO portfolio_settings (id, data) VALUES (?, ?)")
       .bind("site", JSON.stringify(defaultSiteSettings)).run();
+  } else {
+    // 同步教育经历：D1 可能用旧版 defaults 播种，教育条数少于代码默认值时更新
+    try {
+      const stored = JSON.parse(settingsRow.data) as SiteSettings;
+      const defaultEdu = defaultSiteSettings.resume.education;
+      if (!stored.resume?.education || stored.resume.education.length < defaultEdu.length) {
+        const updated = { ...stored, resume: { ...defaultSiteSettings.resume, ...stored.resume, education: defaultEdu } };
+        await db.prepare("UPDATE portfolio_settings SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+          .bind(JSON.stringify(updated), "site").run();
+      }
+    } catch { /* ignore parse errors */ }
   }
 
   // 同步缺失的默认项目：D1 可能用旧版 defaults 播种，需要补入新增项目
@@ -84,6 +95,14 @@ export async function readPortfolioContent(includeHidden = false): Promise<Portf
 
 function normalizeSettings(input: SiteSettings): SiteSettings {
   const accentColor = /^#[0-9a-fA-F]{6}$/.test(input.accentColor) ? input.accentColor : defaultSiteSettings.accentColor;
+  const resume = input.resume && typeof input.resume === "object" ? {
+    age: String(input.resume.age ?? defaultSiteSettings.resume.age).slice(0, 20),
+    workYears: String(input.resume.workYears ?? defaultSiteSettings.resume.workYears).slice(0, 20),
+    majors: Array.isArray(input.resume.majors) && input.resume.majors.length ? input.resume.majors : defaultSiteSettings.resume.majors,
+    hobbies: Array.isArray(input.resume.hobbies) && input.resume.hobbies.length ? input.resume.hobbies : defaultSiteSettings.resume.hobbies,
+    education: Array.isArray(input.resume.education) && input.resume.education.length ? input.resume.education : defaultSiteSettings.resume.education,
+    work: Array.isArray(input.resume.work) && input.resume.work.length ? input.resume.work : defaultSiteSettings.resume.work,
+  } : defaultSiteSettings.resume;
   return {
     ...defaultSiteSettings,
     ...input,
@@ -94,6 +113,7 @@ function normalizeSettings(input: SiteSettings): SiteSettings {
     heroWeight: input.heroWeight === "800" ? "800" : "900",
     heroSlugs: Array.isArray(input.heroSlugs) ? input.heroSlugs.slice(0, 3) : defaultSiteSettings.heroSlugs,
     software: Array.isArray(input.software) ? input.software.slice(0, 12) : defaultSiteSettings.software,
+    resume,
   };
 }
 

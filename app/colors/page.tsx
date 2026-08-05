@@ -10,6 +10,7 @@ const copy = {
     title: "配色库",
     intro: "24 个概念案例中使用的全部色彩，点击色卡生成推荐配色方案，自动复制到剪贴板。",
     portfolio: "作品集",
+    gallery: "画廊",
     bases: "基模库",
     colors: "配色库",
     themeLight: "开启黑夜模式",
@@ -29,6 +30,7 @@ const copy = {
     title: "COLOR ARCHIVE",
     intro: "Every color across 24 concept studies. Click a swatch to generate a palette — auto-copied to clipboard.",
     portfolio: "PORTFOLIO",
+    gallery: "GALLERY",
     bases: "GARMENT BASES",
     colors: "COLORS",
     themeLight: "Enable night mode",
@@ -278,10 +280,11 @@ export default function ColorLibraryPage() {
     <header className="site-header bases-header">
       <Link className="wordmark" href="/#top"><b>{displayName}.</b><span>FASHION PRINT DESIGNER</span></Link>
       <div className="page-switch" aria-label="Page switch">
-        <AdminLink href="/">{t.portfolio}</AdminLink>
-        <Link href="/bases">{t.bases}</Link>
-        <Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link>
-        <Link className="active" href="/colors">{t.colors}</Link>
+<AdminLink href="/">{t.portfolio}</AdminLink>
+<Link href="/gallery">{t.gallery}</Link>
+<Link href="/prompts">{lang === "zh" ? "提示词库" : "PROMPTS"}</Link>
+<Link href="/bases">{t.bases}</Link>
+<Link className="active" href="/colors">{t.colors}</Link>
       </div>
       <div className="header-actions">
         <button className="theme-toggle" onClick={switchTheme} aria-label={theme === "light" ? t.themeLight : t.themeDark} aria-pressed={theme === "dark"}><i /><span>{theme === "light" ? "NIGHT" : "DAY"}</span></button>
