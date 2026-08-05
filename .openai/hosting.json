@@ -1,5 +1,7 @@
 {
   "project_id": "appgprj_6a6ee30c828081919c7d3db9b7d292f3",
   "d1": "DB",
-  "r2": null
+  "r2": null,
+  "d1_database_id": "3ea6a43d-f87e-4a1b-9882-dd7e9f9cab52",
+  "d1_database_name": "portfolio-db"
 }
