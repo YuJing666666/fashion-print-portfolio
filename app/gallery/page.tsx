@@ -135,7 +135,7 @@ export default function GalleryPage() {
     };
   }, [lightbox]);
 
-  // ── Setup grid rows + scan for empty cells, merge into varied fillers ──
+  // ── Setup grid rows + count empty cells + generate varied fillers ──
   useEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
@@ -145,12 +145,12 @@ export default function GalleryPage() {
       const numCols = isMobile ? 3 : 6;
       const rowH = parseInt(getComputedStyle(grid).gridAutoRows) || (isMobile ? 70 : 90);
 
-      // 1. Setup grid-template-rows
+      // 1. Setup grid-template-rows based on current content
       const totalRows = Math.max(1, Math.ceil((grid.scrollHeight + GAP) / (rowH + GAP)));
       const rows = Array.from({ length: totalRows }, (_, i) => `var(--r${i + 1}, ${rowH}px)`).join(" ");
       grid.style.gridTemplateRows = rows;
 
-      // 2. After layout settles, scan for empty cells
+      // 2. After layout settles, count empty cells (excluding fillers)
       requestAnimationFrame(() => {
         const gridRect = grid.getBoundingClientRect();
         if (gridRect.width === 0) return;
@@ -177,69 +177,43 @@ export default function GalleryPage() {
           if (rEnd > maxRow) maxRow = rEnd;
         });
 
-        // Build set of empty cells
-        const emptySet = new Set<string>();
+        // Count total empty cells
+        let emptyCount = 0;
         for (let r = 1; r <= maxRow; r++) {
           for (let c = 1; c <= numCols; c++) {
-            if (!occupied.has(`${r},${c}`)) emptySet.add(`${r},${c}`);
+            if (!occupied.has(`${r},${c}`)) emptyCount++;
           }
         }
 
-        // ── Merge adjacent empty cells into varied-size fillers ──
-        const used = new Set<string>();
+        // Check if current fillers already cover this area → stable, no change needed
+        const currentArea = fillers.reduce((sum, f) => sum + (f.size === "xs" ? 1 : 2), 0);
+        if (emptyCount === currentArea) return;
+
+        // ── Generate deterministic mix: wx (2×1) + sm (1×2) + xs (1×1) ──
+        // Total area always equals emptyCount. grid-auto-flow:dense handles placement.
         const result: FillerSpec[] = [];
-        let wIdx = 0; // index for wide phrases
-        let sIdx = 0; // index for short words
+        let remaining = emptyCount;
 
-        // Pass 1: horizontal pairs → wx (2×1)
-        for (let r = 1; r <= maxRow; r++) {
-          for (let c = 1; c < numCols; c++) {
-            const k1 = `${r},${c}`;
-            const k2 = `${r},${c + 1}`;
-            if (emptySet.has(k1) && emptySet.has(k2) && !used.has(k1) && !used.has(k2)) {
-              result.push({ size: "wx", word: fillerWide[wIdx % fillerWide.length] });
-              wIdx++;
-              used.add(k1); used.add(k2);
-            }
-          }
+        // wx: horizontal strips (~30% of area)
+        const wxCount = Math.floor(emptyCount * 0.3 / 2);
+        for (let i = 0; i < wxCount && remaining >= 2; i++) {
+          result.push({ size: "wx", word: fillerWide[i % fillerWide.length] });
+          remaining -= 2;
         }
 
-        // Pass 2: vertical pairs → sm (1×2)
-        for (let r = 1; r < maxRow; r++) {
-          for (let c = 1; c <= numCols; c++) {
-            const k1 = `${r},${c}`;
-            const k2 = `${r + 1},${c}`;
-            if (emptySet.has(k1) && emptySet.has(k2) && !used.has(k1) && !used.has(k2)) {
-              result.push({ size: "sm", word: fillerWords[(sIdx + 50) % fillerWords.length] });
-              sIdx++;
-              used.add(k1); used.add(k2);
-            }
-          }
+        // sm: vertical strips (~15% of remaining area)
+        const smCount = Math.floor(remaining * 0.2 / 2);
+        for (let i = 0; i < smCount && remaining >= 2; i++) {
+          result.push({ size: "sm", word: fillerWords[(i + 40) % fillerWords.length] });
+          remaining -= 2;
         }
 
-        // Pass 3: remaining singles → xs (1×1)
-        for (let r = 1; r <= maxRow; r++) {
-          for (let c = 1; c <= numCols; c++) {
-            const k = `${r},${c}`;
-            if (emptySet.has(k) && !used.has(k)) {
-              result.push({ size: "xs", word: fillerWords[(sIdx + 80) % fillerWords.length] });
-              sIdx++;
-              used.add(k);
-            }
-          }
+        // xs: fill the rest (fits any single-cell gap)
+        for (let i = 0; i < remaining; i++) {
+          result.push({ size: "xs", word: fillerWords[(i + 80) % fillerWords.length] });
         }
 
-        // Shuffle fillers slightly so they don't look sequential
-        for (let i = result.length - 1; i > 0; i--) {
-          if (Math.random() > 0.5) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [result[i], result[j]] = [result[j], result[i]];
-          }
-        }
-
-        const key = result.map(f => `${f.size}:${f.word}`).join("|");
-        const prevKey = fillers.map(f => `${f.size}:${f.word}`).join("|");
-        if (key !== prevKey) setFillers(result);
+        setFillers(result);
       });
     };
 

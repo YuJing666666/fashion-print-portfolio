@@ -773,6 +773,7 @@ html[data-theme="dark"] .back-to-top-btn { background:var(--acid); color:#111; }
 .gw-card.gw-text:not(.gw-fixed) .gw-text-inner b { font-size:.72rem; opacity:.6; }
 .gw-xs .gw-text-inner b { font-size:.48rem; opacity:.32; letter-spacing:.04em; }
 .gw-wx .gw-text-inner b { font-size:.52rem; opacity:.38; letter-spacing:.06em; }
+.gw-sm .gw-text-inner b { font-size:.56rem; opacity:.42; letter-spacing:.05em; }
 /* Fixed text cards */
 .gw-fixed { cursor:default; }
 .gw-filler { cursor:default; }
